@@ -1,0 +1,31 @@
+SBATCH
+/usr/bin/which: no nvcc in (/home/knlr326/.vscode-server/cli/servers/Stable-903b1e9d8990623e3d7da1df3d33db3e42d80eda/server/bin/remote-cli:/projects/cc/se_users/knlr326/miniconda_SE/envs/NMR_Structure_Elucidator/bin:/projects/cc/se_users/knlr326/miniconda_SE/condabin:/usr/local/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/home/knlr326/.local/bin:/home/knlr326/bin)
+
+ACTIVATE
+/projects/cc/se_users/knlr326/miniconda_SE/envs/NMR_Structure_Elucidator/bin/python
+nvidia-smi
+Thu Oct 17 20:59:53 2024       
++---------------------------------------------------------------------------------------+
+| NVIDIA-SMI 535.183.06             Driver Version: 535.183.06   CUDA Version: 12.2     |
+|-----------------------------------------+----------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id        Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |         Memory-Usage | GPU-Util  Compute M. |
+|                                         |                      |               MIG M. |
+|=========================================+======================+======================|
+|   0  NVIDIA A100-SXM4-40GB          On  | 00000000:81:00.0 Off |                    0 |
+| N/A   29C    P0              50W / 400W |      0MiB / 40960MiB |      0%   E. Process |
+|                                         |                      |             Disabled |
++-----------------------------------------+----------------------+----------------------+
+                                                                                         
++---------------------------------------------------------------------------------------+
+| Processes:                                                                            |
+|  GPU   GI   CI        PID   Type   Process name                            GPU Memory |
+|        ID   ID                                                             Usage      |
+|=======================================================================================|
+|  No running processes found                                                           |
++---------------------------------------------------------------------------------------+
+python
+Traceback (most recent call last):
+  File "/projects/cc/se_users/knlr326/1_NMR_project/2_Notebooks/MultiModalTransformer/scripts/script_PC_0_250.py", line 74, in <module>
+    sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+NameError: name 'sys' is not defined
