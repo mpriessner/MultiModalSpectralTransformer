@@ -1,0 +1,14 @@
+2024-08-07 07:30:43.594462: Simulating...
+2024-08-07 07:30:43.594477: Function simulate: Start of Simulation
+2024-08-07 07:30:43.594479: Function simulate: Simulation Succeeded
+2024-08-07 07:30:43.594481: NMR Plot: Run Plot_NMR
+2024-08-07 07:30:43.594483: NMR Plot: Loading data successful
+2024-08-07 07:30:43.594485: NMR Plot: Plot_NMR 3
+2024-08-07 07:30:43.594487: NMR Plot: Extraction of datapoints successful
+2024-08-07 07:30:43.594489: NMR Plot: Plotting of Spectrum successful
+2024-08-07 07:30:43.594491: Running improvement cycle...
+2024-08-07 07:30:43.594493: Running run_IC: Loaded Config
+2024-08-07 07:30:43.594495: Running run_IC: Starting Improvement Cycle
+2024-08-07 07:30:43.594497: Running test_model_IC: Configs loaded
+2024-08-07 07:30:43.594498: Performance: <Response 69 bytes [200 OK]>
+2024-08-07 07:30:43.594500: Error testing model: JSON.parse: unexpected character at line 1 column 1 of the JSON data

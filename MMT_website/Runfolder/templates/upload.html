@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Files</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 0;
+        }
+         .header-container {
+            background-color: #2c2c2c;
+            color: #f7c948;
+            padding: 15px;
+            text-align: center;
+        }
+        .container {
+            margin-top: 50px;
+        }
+        .file-input {
+            margin-bottom: 10px;
+        }
+        .uploaded-files {
+            margin-top: 20px;
+        }
+        .uploaded-file {
+            padding: 10px;
+            background-color: #e9ecef;
+            border-radius: 5px;
+            margin-bottom: 5px;
+        }
+        /* Custom button styles */
+        .btn-primary {
+            background-color: #6f42c1; /* Custom primary color */
+            border-color: #6f42c1; /* Custom primary border color */
+            color: #ffffff; /* Custom text color */
+        }
+        .btn-primary:hover {
+            background-color: #5a379f; /* Custom hover background color */
+            border-color: #5a379f; /* Custom hover border color */
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header text-center">
+                        <h1>Upload CSV Files</h1>
+                    </div>
+                    <div class="card-body">
+                        <form action="/upload" method="post" enctype="multipart/form-data">
+                            <div class="form-group">
+                                <label for="file_1H">1H NMR CSV Files</label>
+                                <input type="file" class="form-control-file file-input" id="file_1H" name="file_1H" accept=".csv" multiple>
+                            </div>
+                            <div class="form-group">
+                                <label for="file_13C">13C NMR CSV Files</label>
+                                <input type="file" class="form-control-file file-input" id="file_13C" name="file_13C" accept=".csv" multiple>
+                            </div>
+                            <div class="form-group">
+                                <label for="file_HSQC">HSQC NMR CSV Files</label>
+                                <input type="file" class="form-control-file file-input" id="file_HSQC" name="file_HSQC" accept=".csv" multiple>
+                            </div>
+                            <div class="form-group">
+                                <label for="file_COSY">COSY NMR CSV Files</label>
+                                <input type="file" class="form-control-file file-input" id="file_COSY" name="file_COSY" accept=".csv" multiple>
+                            </div>
+                            <div class="form-group">
+                                <label for="file_IR">IR CSV Files</label>
+                                <input type="file" class="form-control-file file-input" id="file_IR" name="file_IR" accept=".csv" multiple>
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-block">Upload</button>
+                        </form>
+                    </div>
+                </div>
+                {% if uploaded_files %}
+                <div class="uploaded-files">
+                    <h3 class="text-center">Uploaded Files</h3>
+                    {% for file in uploaded_files %}
+                    <div class="uploaded-file">
+                        <p class="mb-0">{{ file }}</p>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

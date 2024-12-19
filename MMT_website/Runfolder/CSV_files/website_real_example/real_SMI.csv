@@ -1,0 +1,6 @@
+sample-id;SMILES
+AZ12227950;[H]/C(CN1CCCC1)=C(/c1ccc(C)cc1)c1ccccn1
+AZ10011150;O=C(O)CCc1nc(-c2ccccc2)c(-c2ccccc2)o1
+AZ10075521;[H][C@]1(N(CCC)CCC)CCc2cccc(O)c2C1
+AZ10006736;CCN(CC)CCOC(=O)c1ccc(N)cc1
+AZ10117523;COc1cc(CC(=O)O)ccc1O

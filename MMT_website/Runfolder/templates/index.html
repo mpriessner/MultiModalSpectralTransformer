@@ -1,0 +1,1041 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>NMR Project</title>
+        <!-- Bootstrap CSS -->
+        <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+        <!-- Plotly.js library -->
+        <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
+
+        <style>
+        body {
+            background-color: #e0e0e0;
+            color: #2c2c2c;
+        }
+        .color-scale {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border: 2px solid #6f42c1;
+            border-radius: 5px;
+        }
+        .header-container {
+            background-color: #2c2c2c;
+            color: #f7c948;
+            padding: 15px;
+            text-align: center;
+        }
+        .header-container .icon {
+            position: absolute;
+            top: 10px; /* Adjust as needed */
+            left: 10px; /* Adjust as needed */
+            width: 30px; /* Adjust size as needed */
+            height: 30px; /* Adjust size as needed */
+        }
+        .hidden {
+            display: none !important;
+        }
+        .full-width-container {
+            width: 90%;
+            padding: 20px 15px;
+        }
+        .flex-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 400px;
+            border: 2px solid #6f42c1;
+            border-radius: 5px;
+            background-color: #444;
+            overflow: hidden;
+        }
+        .nmr-plot {
+            width: 100%;
+            height: 100%;
+        }
+        #molecule_images {
+            display: flex;
+            flex-wrap: wrap; /* Allow items to wrap to the next line */
+            justify-content: space-around; /* Distribute items evenly with space around */
+            margin-top: 30px;
+        }
+        .molecule-container {
+            display: inline-block;
+            width: 18%; /* Slightly reduced to account for margins */
+            margin: 0 1%;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border: 2px solid #6f42c1;
+            border-radius: 5px;
+            overflow: hidden;
+            box-sizing: border-box;
+            vertical-align: top;
+            height: 400px; /* Adjust as needed */
+        }
+        .molecule-container img {
+            max-width: 100%; /* Ensures the image fits within the container's width */
+            max-height: 150px; /* Adjust this height based on the container's height */
+            height: auto;
+            width: auto;
+            border: 3px solid #6f42c1; /* Adds a purple border to the molecule image */
+            border-radius: 10px; /* Optional: adds rounded corners */
+            object-fit: contain; /* Ensures the image scales to fit the container */
+        }
+        #molecule-containers-wrapper {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            margin-top: 20px;
+            width: 100%; /* Ensure it takes full width */
+        }
+        .molecule-label {
+            text-align: center;
+            color: #2c2c2c;
+            margin-top: 10px; /* Adds some space between the image and the label */
+        }
+        .single-molecule-container{
+            border: 3px solid #6f42c1; /* Adds a purple border to the molecule image */
+            border-radius: 10px; /* Optional: adds rounded corners */
+        }
+        #console {
+            display: none;
+            position: fixed;
+            width: 80%;
+            max-width: 300px;
+            height: 600px;
+            background-color: black;
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            overflow-y: auto;
+            font-family: monospace;
+            resize: both;
+            overflow: auto;
+            z-index: 1000;
+        }
+        #section_1 .row {
+            display: flex;
+            flex-wrap: wrap;
+        }
+
+        #section_1 .col-md-6 {
+            display: flex;
+            flex-direction: column;
+        }
+        #section_2 .col-md-4 {
+            width: 100%;
+        }
+        #molecule_image_container {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        #nmr_plot {
+            flex-grow: 1;
+            margin-bottom: 20px;
+        }
+        #consoleHeader {
+            cursor: move;
+            background-color: #333;
+            padding: 5px;
+            border-radius: 5px 5px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        #gradientCanvas {
+            cursor: pointer;
+            border: 2px solid #6f42c1; /* Adds a purple border to the molecule image */
+            border-radius: 10px; /* Optional: adds rounded corners */
+        }
+        #tooltip {
+            position: absolute;
+            display: none;
+            background-color: white;
+            border: 1px solid black;
+            padding: 5px;
+            pointer-events: none; /* Ensure the tooltip doesn't interfere with mouse events */
+        }
+        .closeBtn {
+            cursor: pointer;
+            color: white;
+            font-weight: bold;
+        }
+        .closeBtn:hover {
+            color: red;
+        }
+        .btn-primary {
+            background-color: #6f42c1;
+            border-color: #6f42c1;
+        }
+        .btn-primary:hover {
+            background-color: #5a379f;
+            border-color: #5a379f;
+        }
+        .btn-secondary {
+            background-color: #f7c948;
+            border-color: #f7c948;
+            color: #2c2c2c;
+        }
+        .btn-secondary:hover {
+            background-color: #e6b530;
+            border-color: #e6b530;
+        }
+        .btn-outline-primary {
+            color: #6f42c1;
+            border-color: #6f42c1;
+        }
+        .btn-outline-primary:hover {
+            color: #fff;
+            background-color: #6f42c1;
+            border-color: #6f42c1;
+        }
+        .btn-console {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            padding: 10px;
+            background-color: #6f42c1;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .btn-console:hover{
+            background-color: #918585;
+            border-color: #918585;
+        }
+        .info-icon {
+            color: #6c757d;
+            margin-left: 5px;
+            cursor: pointer;
+        }
+
+        .info-icon:hover {
+            color: #5a6268;
+        }
+    </style>
+    </head>
+    <body>
+        <!-- Hidden file input -->
+        <input type="file" class="form-control-file file-input" id="fileInput" accept=".csv" style="display: none;" multiple>
+
+        <div class="header-container">
+            <h1>NMR Project</h1>
+        </div>
+        <div class="container-fluid full-width-container state.get('section_1')" id="section_1">
+            <button class="btn-console" id="console_button">Toggle Console</button>
+            <div id="console">
+                <div id="consoleHeader">
+                    Console
+                    <span class="closeBtn" id="closeConsole">&times;</span>
+                </div>
+                <div id="consoleContent"></div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <h2>Simulate data</h2>
+                    <div class="form-group">
+                        <label for="SMILES_pathInput">SMILES path<i class="fas fa-info-circle info-icon" data-toggle="tooltip" title="Path to the CSV file containing SMILES strings for molecules to be simulated. The file should have a 'SMILES' column and a 'sample-id' column."></i></label>
+                        <input id="SMILES_pathInput" name="SMILES_pathInput" type="text" placeholder="Enter SMILES path" value="/projects/cc/knlr326/1_NMR_project/2_Notebooks/MultiModalTransformer/MMT_website/Runfolder/CSV_files/test_files/ML_NMR_1H_combined_ZINC_test_10.csv">
+                    </div>
+                    <button class="btn btn-primary" id="simulate_button">Simulate</button>
+                    <div id="molecule_image_container">
+                        <img id="molecule_image" src="" alt="Molecule Image" class="single-molecule-container">
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <h2>NMR Spectrum</h2>
+                    <div class="btn-group mb-3" role="group" aria-label="NMR Type">
+                        <button type="button" class="btn btn-secondary nmr-type-btn" data-type="1H">1H</button>
+                        <button type="button" class="btn btn-secondary nmr-type-btn" data-type="13C">13C</button>
+                        <button type="button" class="btn btn-secondary nmr-type-btn" data-type="HSQC">HSQC</button>
+                        <button type="button" class="btn btn-secondary nmr-type-btn" data-type="COSY">COSY</button>
+                        <button type="button" class="btn btn-secondary nmr-type-btn" data-type="IR">IR</button>
+                    </div>
+                    <div id="nmr_plot" style="width:100%; height:400px;"></div>
+                    <div class="form-group mt-3">
+                        <label for="moleculeIndexInput">Molecule Index:</label>
+                        <input type="number" id="moleculeIndexInput" name="moleculeIndexInput" min="0" value="0" class="form-control">
+                        <button id="updateMoleculeButton" class="btn btn-primary mt-2">Update Molecule</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="container-fluid full-width-container" id="section_2">
+            <div class="row">
+                <div class="col-md-4">
+                    <hr>
+                    <h2>Test model</h2>
+                    <div class="form-group">
+                        <label for="MNS_numberInput">Enter MNS number <i class="fas fa-info-circle info-icon" data-toggle="tooltip" title="Number of Multinomial Sampling runs"></i></label>
+                        <input type="number" id="MNS_numberInput" name="MNS_numberInput" value="3">
+                    </div>
+                    <div class="form-group">
+                        <label for="Checkpoint_pathInput">Checkpoint path <i class="fas fa-info-circle info-icon" data-toggle="tooltip" title="Path to the model checkpoint file"></i></label>
+                        <input id="Checkpoint_pathInput" name="Checkpoint_pathInput" type="text" placeholder="Enter checkpoint path" value="/projects/cc/knlr326/1_NMR_project/2_Notebooks/MultiModalTransformer/models/1_0_V8i_MMTi_RAW_MW_DROP_Loss_0.112.ckpt">
+                    </div>
+                    <div class="form-group">
+                        <label for="SpectralTypes_stringInput">Spectral types <i class="fas fa-info-circle info-icon" data-toggle="tooltip" title="Types of spectra to use, e.g., '1H_13C_HSQC_COSY_IR'"></i></label>
+                        <input id="SpectralTypes_stringInput" name="SpectralTypes_stringInput" type="text" value="1H_13C_HSQC_COSY_IR">
+                    </div>
+                    <button class="btn btn-primary" id="testmodel_executeButton">Execute</button>
+                    <div id="histograms-container" style="display: none;">
+                        <div id="histogram1" style="width:100%;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="container-fluid full-width-container" id="section_3">
+            <div class="row">
+                <div class="col-md-5">
+                    <hr>
+                    <h2>Improvement cycle</h2>
+                    <div class="form-group">
+                        <label for="MF_generations_numberInput">
+                            Enter MF_generations
+                            <i class="fas fa-info-circle info-icon" data-toggle="tooltip" title="Number of generations for Molecular Fingerprint (MF) optimization"></i>
+                        </label>
+                        <input type="number" id="MF_generations_numberInput" name="MF_generations_numberInput" value="50">
+                    </div>
+                    <div class="form-group">
+                        <label for="IC_threshold_numberInput">
+                            Enter threshold number
+                            <i class="fas fa-info-circle info-icon" data-toggle="tooltip" title="Improvement Cycle (IC) threshold for model performance"></i>
+                        </label>
+                        <input type="number" id="IC_threshold_numberInput" name="IC_threshold_numberInput" value="0.7" step="0.1">
+                    </div>
+                    <div class="form-group">
+                        <label for="MF_delta_weight_numberInput">
+                            Enter MF_delta_weight
+                            <i class="fas fa-info-circle info-icon" data-toggle="tooltip" title="Weight factor for changes in Molecular Fingerprint"></i>
+                        </label>
+                        <input type="number" id="MF_delta_weight_numberInput" name="MF_delta_weight_numberInput" value="100">
+                    </div>
+                    <div class="form-group">
+                        <label for="max_scaffold_generations">
+                            Enter max_scaffold_generations
+                            <i class="fas fa-info-circle info-icon" data-toggle="tooltip" title="Maximum number of generations for scaffold optimization"></i>
+                        </label>
+                        <input type="number" id="max_scaffold_generations_numberInput" name="max_scaffold_generations_numberInput" value="50">
+                    </div>
+                    <div class="form-group">
+                        <label for="lr_pretraining_numberInput">
+                            Enter lr_pretraining
+                            <i class="fas fa-info-circle info-icon" data-toggle="tooltip" title="Learning rate for pre-training phase"></i>
+                        </label>
+                        <input type="number" id="lr_pretraining_numberInput" name="lr_pretraining_numberInput" value="0.0003" step="0.0001">       
+                    </div>
+                    <div class="form-group">
+                        <label for="model_save_dir_pathInput">
+                            Enter model_save_dir
+                            <i class="fas fa-info-circle info-icon" data-toggle="tooltip" title="Directory path to save the trained model"></i>
+                        </label>
+                        <input type="text" id="model_save_dir_pathInput" name="model_save_dir_pathInput" value="/projects/cc/knlr326/1_NMR_project/1_NMR_data_AZ/1_old_models/models_v2/test">
+                    </div>
+                    <div class="form-group">
+                        <label for="num_epochs_numberInput">
+                            Enter num_epochs
+                            <i class="fas fa-info-circle info-icon" data-toggle="tooltip" title="Number of training epochs"></i>
+                        </label>
+                        <input type="number" id="num_epochs_numberInput" name="num_epochs_numberInput" value="20">    
+                    </div>
+                    <div class="form-group">
+                        <label for="data_size_numberInput">
+                            Enter data_size
+                            <i class="fas fa-info-circle info-icon" data-toggle="tooltip" title="Size of the dataset to be used for training"></i>
+                        </label>
+                        <input type="number" id="data_size_numberInput" name="data_size_numberInput" value="5">    
+                    </div>
+                    <button class="btn btn-primary" id="IC_executeButton">Execute</button>
+                    <div id="histograms-container-2" style="display: none;">
+                        <div id="histogram2" style="width:100%; height:300px;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="container-fluid full-width-container" id="section_4">
+            <div class="row">
+                <div class="col-md-6">
+                    <hr>
+                    <h2>Run model</h2>
+        
+                    <div class="form-group">
+                        <label for="1H_pathInput">
+                            Enter 1H path
+                            <i class="fas fa-info-circle info-icon" data-toggle="tooltip" title="Path to the CSV file containing 1H NMR data"></i>
+                        </label>
+                        <input id="1H_pathInput" name="1H_pathInput" type="text" placeholder="Enter 1H path" value="/projects/cc/knlr326/1_NMR_project/2_Notebooks/MultiModalTransformer/MMT_website/Runfolder/CSV_files/test_files/ML_NMR_1H_combined_ZINC_test_10x100.csv">
+                    </div>
+                    <div class="form-group">
+                        <label for="13C_pathInput">
+                            Enter 13C path
+                            <i class="fas fa-info-circle info-icon" data-toggle="tooltip" title="Path to the CSV file containing 13C NMR data"></i>
+                        </label>
+                        <input id="13C_pathInput" name="13C_pathInput" type="text" placeholder="Enter 13C path" value="/projects/cc/knlr326/1_NMR_project/2_Notebooks/MultiModalTransformer/MMT_website/Runfolder/CSV_files/test_files/ML_NMR_5M_XL_13C_test_10x100.csv">
+                    </div>
+                    <div class="form-group">
+                        <label for="HSQC_pathInput">
+                            Enter HSQC path
+                            <i class="fas fa-info-circle info-icon" data-toggle="tooltip" title="Path to the CSV file containing HSQC NMR data"></i>
+                        </label>
+                        <input id="HSQC_pathInput" name="HSQC_pathInput" type="text" placeholder="Enter HSQC path" value="/projects/cc/knlr326/1_NMR_project/2_Notebooks/MultiModalTransformer/MMT_website/Runfolder/CSV_files/test_files/ML_NMR_5M_XL_HSQC_test_10x100.csv">
+                    </div>
+                    <div class="form-group">
+                        <label for="COSY_pathInput">
+                            Enter COSY path
+                            <i class="fas fa-info-circle info-icon" data-toggle="tooltip" title="Path to the CSV file containing COSY NMR data"></i>
+                        </label>
+                        <input id="COSY_pathInput" name="COSY_pathInput" type="text" placeholder="Enter COSY path" value="/projects/cc/knlr326/1_NMR_project/2_Notebooks/MultiModalTransformer/MMT_website/Runfolder/CSV_files/test_files/ML_NMR_5M_XL_COSY_test_10x100.csv">
+                    </div>
+                    <div class="form-group">
+                        <label for="IR_pathInput">
+                            Enter IR folder path
+                            <i class="fas fa-info-circle info-icon" data-toggle="tooltip" title="Path to the folder containing IR spectral data files"></i>
+                        </label>
+                        <input id="IR_pathInput" name="IR_pathInput" type="text" placeholder="Enter IR path" value="/projects/cc/knlr326/1_NMR_project/2_Notebooks/MultiModalTransformer/MMT_website/Runfolder/CSV_files/test_files/ZINC_IR">
+                    </div>
+                    <div class="form-group">
+                        <label for="MNS_numberInput_2">
+                            Enter MNS number
+                            <i class="fas fa-info-circle info-icon" data-toggle="tooltip" title="Number of Multinomial Sampling runs for this model execution"></i>
+                        </label>
+                        <input type="number" id="MNS_numberInput_2" name="MNS_numberInput_2" value="5">   
+                    </div>
+                    <div class="form-group">
+                        <label for="Checkpoint_pathInput_2">
+                            Checkpoint path
+                            <i class="fas fa-info-circle info-icon" data-toggle="tooltip" title="Path to the model checkpoint file to be used for this run - if kept empty it will use the latest checkpoint from the improvement cycle"></i>
+                        </label>
+                        <input id="Checkpoint_pathInput_2" name="Checkpoint_pathInput_2" type="text" placeholder="Enter checkpoint path"  value="/projects/cc/knlr326/1_NMR_project/2_Notebooks/MultiModalTransformer/models/1_0_V8i_MMTi_RAW_MW_DROP_Loss_0.112.ckpt">
+                    </div>
+                    <div class="form-group">
+                        <label for="data_size_numberInput_2">
+                            Enter data size
+                            <i class="fas fa-info-circle info-icon" data-toggle="tooltip" title="Number of data points to use for the model run"></i>
+                        </label>
+                        <input type="number" id="data_size_numberInput_2" name="data_size_numberInput_2" value="5">
+                    </div>
+
+                    <div class="form-group">
+                        <button class="btn btn-primary" id="runmodel_executeButton" > Execute </button>
+                    </div>
+                    <div id="histograms-container-3" style="display: none;">
+                        <div id="histogram3" style="width:100%;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="container-fluid full-width-container" id="section_5">
+            <div class="row">
+                <h2>Molecule display</h2>
+                <div class="container-fluid">
+                    <label for="moleculeindex_numberInput">
+                        Enter molecule index to compare
+                        <i class="fas fa-info-circle info-icon" data-toggle="tooltip" title="Index of the molecule you want to display and compare. This should be a number corresponding to the position of the molecule in your dataset."></i>
+                    </label>
+                    <input type="number" id="moleculeindex_numberInput" name="moleculeindex_numberInput" value="0">>   
+                </div>
+                <button class="btn btn-primary" id="loadcompare_executeButton" > Load </button>
+                <div id="molecule-containers-wrapper">
+                    <div id="molecule_image_container_2"></div>
+                        {% for i in range(5) %}
+                            <div class="molecule-container" id="molecule-container{{ i }}" onclick="moleculeClicked({{ i }})"></div>
+                        {% endfor %}
+                </div>
+                <hr>        
+                <canvas id="gradientCanvas" width="1000" height="50"></canvas>
+                <div id="tooltip"></div>
+            </div>
+        </div>
+        <div class="container-fluid full-width-container" id="section_6">
+            <div class="row">
+                <div class="col-md-6">
+                    <hr>
+                    <h2>NMR display</h2>
+                    <div class="form-group">
+                        <label for="experimentalIndexInput">
+                            Experimental Index:
+                            <i class="fas fa-info-circle info-icon" data-toggle="tooltip" title="Index of the experimental NMR spectrum you want to display. This should correspond to the position of the spectrum in your experimental dataset."></i>
+                        </label>
+                        <input type="number" id="experimentalIndexInput" class="form-control" min="0" value="0">
+                    </div>
+                    <div class="form-group">
+                        <label for="simulatedIndexInput">
+                            Simulated Index:
+                            <i class="fas fa-info-circle info-icon" data-toggle="tooltip" title="Index of the simulated NMR spectrum you want to display. This should correspond to the position of the spectrum in your simulated dataset."></i>
+                        </label>
+                        <input type="number" id="simulatedIndexInput" class="form-control" min="0" value="0">
+                    </div>
+                    <div class="btn-group mb-3" role="group" aria-label="NMR Type">
+                        <button type="button" class="btn btn-secondary nmr-type-btn-dual" data-type="1H">1H</button>
+                        <button type="button" class="btn btn-secondary nmr-type-btn-dual" data-type="13C">13C</button>
+                        <button type="button" class="btn btn-secondary nmr-type-btn-dual" data-type="HSQC">HSQC</button>
+                        <button type="button" class="btn btn-secondary nmr-type-btn-dual" data-type="COSY">COSY</button>
+                        <button type="button" class="btn btn-secondary nmr-type-btn-dual" data-type="IR">IR</button>
+                    </div>
+                    <button id="plotSpectraButton" class="btn btn-primary mb-3">Plot Spectra</button>
+                    <div id="nmr_plot_dual" style="width:100%; height:400px;"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bootstrap JS and dependencies -->
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+
+        <script>
+
+            // // Function to plot Tanimoto histogram
+            // function plotTanimotoHistogram() {
+            //     fetch('/generate_tanimoto_histogram')
+            //         .then(response => response.json())
+            //         .then(data => {
+            //             document.getElementById('histograms-container').style.display = 'block';
+                        
+            //             // Create an image element and set its source to the base64 encoded plot
+            //             const img = document.createElement('img');
+            //             img.src = 'data:image/png;base64,' + data.image;
+                        
+            //             // Clear previous content and append the new image
+            //             const container = document.getElementById('histogram1');
+            //             container.innerHTML = '';
+            //             container.appendChild(img);
+            //         });
+            // }
+
+
+            // vvv------------------ Console ----------------------vvv
+            // Function to print messages to the console
+            let consoleMessages = [];
+            let isDragging = false;
+            let dragOffsetX, dragOffsetY;
+            const consoleElement = document.getElementById('console');
+            
+            const socket = io();
+
+            socket.on('console_message', (data) => {
+                printToConsole(data.message);
+            });
+
+            function initConsole() {
+                const consoleHeader = document.getElementById('consoleHeader');
+
+                // Set initial position
+                consoleElement.style.left = '100px';
+                consoleElement.style.top = '300px';
+                consoleHeader.addEventListener('mousedown', startDragging);
+                document.addEventListener('mousemove', drag);
+                document.addEventListener('mouseup', stopDragging);
+
+            }
+
+            // Toggle console visibility
+            document.getElementById('console_button').addEventListener('click', function() {
+                if (consoleElement.style.display === 'none' || consoleElement.style.display === '') {
+                    consoleElement.style.display = 'block';
+                    updateConsolePosition();
+                } else {
+                    consoleElement.style.display = 'none';
+                }
+            });
+
+            // Close console
+            document.getElementById('closeConsole').addEventListener('click', function() {
+                consoleElement.style.display = 'none';
+            });
+
+            window.addEventListener('scroll', updateConsolePosition);
+            window.addEventListener('resize', updateConsolePosition);
+
+            function printToConsole(message) {
+                const consoleElement = document.getElementById('consoleContent');
+                const p = document.createElement('p');
+                p.textContent = message;
+                consoleElement.appendChild(p);
+                consoleElement.scrollTop = consoleElement.scrollHeight; // Auto-scroll to bottom
+
+                // Store the message in memory
+                consoleMessages.push(message);
+            }
+
+            function sendLogToServer() {
+                if (consoleMessages.length > 0) {
+                    fetch('/log_messages', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({messages: consoleMessages}),
+                        // Use keepalive to ensure the request is sent even if the page is unloading
+                        keepalive: true
+                    }).then(() => {
+                        // Clear the messages after successful send
+                        consoleMessages = [];
+                    }).catch(error => {
+                        console.error('Failed to send log messages:', error);
+                    });
+                }
+            }
+
+            function startDragging(e) {
+                isDragging = true;
+                const consoleElement = document.getElementById('console');
+                dragOffsetX = e.clientX - consoleElement.offsetLeft;
+                dragOffsetY = e.clientY - consoleElement.offsetTop;
+            }
+
+            function drag(e) {
+                if (isDragging) {
+                    const consoleElement = document.getElementById('console');
+                    consoleElement.style.left = (e.clientX - dragOffsetX) + 'px';
+                    consoleElement.style.top = (e.clientY - dragOffsetY) + 'px';
+                }
+            }
+
+            function stopDragging() {
+                isDragging = false;
+            }
+
+            function updateConsolePosition() {
+                const consoleElement = document.getElementById('console');
+                if (consoleElement.style.display !== 'none') {
+                    const rect = consoleElement.getBoundingClientRect();
+                    const viewportHeight = window.innerHeight;
+                    const viewportWidth = window.innerWidth;
+
+                    // Adjust vertical position if needed
+                    if (rect.bottom > viewportHeight) {
+                        consoleElement.style.top = (viewportHeight - rect.height) + 'px';
+                    }
+                    if (rect.top < 0) {
+                        consoleElement.style.top = '0px';
+                    }
+
+                    // Adjust horizontal position if needed
+                    if (rect.right > viewportWidth) {
+                        consoleElement.style.left = (viewportWidth - rect.width) + 'px';
+                    }
+                    if (rect.left < 0) {
+                        consoleElement.style.left = '0px';
+                    }
+                }
+            }
+
+            // Add an event listener for when the page is about to be unloaded (including reload)
+            window.addEventListener('pagehide', function (e) {
+                sendLogToServer();
+            });
+
+            // Call initConsole when the DOM is loaded
+            document.addEventListener('DOMContentLoaded', initConsole);
+
+                document.addEventListener('DOMContentLoaded', () => {
+                initConsole();
+                $('[data-toggle="tooltip"]').tooltip();
+
+            });
+            // ^^^------------------ Console ----------------------^^^
+
+
+            let currentNMRType = '1H';
+
+            document.getElementById('simulate_button').addEventListener('click', async function() {
+                var SMILES_Path = document.getElementById('SMILES_pathInput').value;
+                var index = parseInt(document.getElementById('moleculeIndexInput').value) || 0;
+                printToConsole("Simulating...");
+                
+                try {
+                    const response = await $.ajax({
+                        url: `/simulate/${SMILES_Path}`,
+                        type: 'GET',
+                    });
+                    console.log("Request sent successfully.");
+                    
+                    await plotNMR(currentNMRType, index);
+                    
+                    const imageResponse = await fetch(`/molecule_image/${index}`);
+                    const blob = await imageResponse.blob();
+                    const imageUrl = URL.createObjectURL(blob);
+                    document.getElementById('molecule_image').src = imageUrl;
+                } catch (error) {
+                    console.error('Error:', error);
+                    printToConsole("Error occurred during simulation.");
+                }
+            });
+
+
+
+
+            // Add event listeners for NMR type buttons
+            document.querySelectorAll('.nmr-type-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    currentNMRType = this.getAttribute('data-type');
+                    plotNMR(currentNMRType);
+                });
+            });
+
+            function plotNMR(nmrType, index) {
+                index = index || 0;  // Default to 0 if index is undefined
+                return new Promise(function(resolve, reject) {
+                    fetch(`/plot_nmr?nmr_type=${nmrType}&index=${index}`)
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error('Network response was not ok');
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+                            console.log('Received data:', data);
+                            try {
+                                const plotData = JSON.parse(data);
+                                Plotly.newPlot('nmr_plot', plotData.data, plotData.layout);
+                                resolve();
+                            } catch (error) {
+                                console.error('Error parsing plot data:', error);
+                                printToConsole("Error parsing NMR plot data.");
+                                reject(error);
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error plotting NMR:', error);
+                            printToConsole("Error plotting NMR spectrum.");
+                            reject(error);
+                        });
+                });
+            }
+            document.getElementById('updateMoleculeButton').addEventListener('click', function() {
+                const index = parseInt(document.getElementById('moleculeIndexInput').value) || 0;
+                updateMolecule(index);
+            });
+
+            function updateMolecule(index) {
+                // Update molecule image
+                fetch(`/molecule_image/${index}`)
+                    .then(response => response.blob())
+                    .then(blob => {
+                        const imageUrl = URL.createObjectURL(blob);
+                        document.getElementById('molecule_image').src = imageUrl;
+                    })
+                    .catch(error => {
+                        console.error('Error updating molecule image:', error);
+                        printToConsole("Error updating molecule image.");
+                    });
+
+                // Update NMR plot
+                plotNMR(currentNMRType, index)
+                    .catch(error => {
+                        console.error('Error updating NMR plot:', error);
+                        printToConsole("Error updating NMR plot.");
+                    });
+            }
+
+            function changeMolecule(direction) {
+                fetch(`/${direction}_molecule`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        console.error(data.error);
+                    } else {
+                        // Update molecule image
+                        fetch(`/molecule_image`)
+                            .then(response => response.blob())
+                            .then(blob => {
+                                const imageUrl = URL.createObjectURL(blob);
+                                document.getElementById('molecule_image').src = imageUrl;
+                            });
+                        // Update NMR plot
+                        plotNMR(currentNMRType);
+                    }
+                })
+                .catch((error) => {
+                    console.error('Error:', error);
+                });
+            }
+            // ^^^------------------ Section 1 ---------------------^^^
+
+            // vvv------------------ Section 2 ---------------------vvv
+            //Eventlistener for testmodel_executeButton
+            document.getElementById('testmodel_executeButton').addEventListener('click', function() {
+                var MNSValue = parseInt(document.getElementById('MNS_numberInput').value);
+                var Checkpoint_Path = document.getElementById('Checkpoint_pathInput').value;
+                var Spectral_Types = document.getElementById('SpectralTypes_stringInput').value;
+
+                printToConsole("Testing model...")
+                fetch(`/test_model/${encodeURIComponent(Checkpoint_Path)}/${MNSValue}/${Spectral_Types}`)
+                    .then(response => {
+                        if (!response.ok) {
+                            return response.json().then(err => { throw new Error(err.error) });
+                        }
+                        return response.blob();
+                    })
+                    .then(blob => {
+                        const imageUrl = URL.createObjectURL(blob);
+                        document.getElementById('histograms-container').style.display = 'block';
+                        
+                        // Create an image element and set its source to the blob URL
+                        const img = document.createElement('img');
+                        img.src = imageUrl;
+                        
+                        // Clear previous content and append the new image
+                        const container = document.getElementById('histogram1');
+                        container.innerHTML = '';
+                        container.appendChild(img);
+
+                        printToConsole("Model test complete. Plot displayed.");
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        printToConsole("Error testing model: " + error.message);
+                    });
+            });
+            // ^^^------------------ Section 2 ---------------------^^^
+        
+            // vvv------------------ Section 3 ---------------------vvv
+            document.getElementById('IC_executeButton').addEventListener('click', function() {
+                var MF_generations = parseInt(document.getElementById('MF_generations_numberInput').value);
+                var IC_threshold = parseFloat(document.getElementById('IC_threshold_numberInput').value);
+                var MF_delta_weight = parseInt(document.getElementById('MF_delta_weight_numberInput').value);
+                var max_scaffold_generations = parseInt(document.getElementById('max_scaffold_generations_numberInput').value);
+                var lr_pretraining = parseFloat(document.getElementById('lr_pretraining_numberInput').value);
+                var model_save_dir = document.getElementById('model_save_dir_pathInput').value;
+                var num_epochs = parseInt(document.getElementById('num_epochs_numberInput').value);
+                var data_size = parseInt(document.getElementById('data_size_numberInput').value);
+                printToConsole("Running improvement cycle...")
+
+                fetch(`/run_IC/${encodeURIComponent(model_save_dir)}/${MF_generations}/${num_epochs}/${MF_delta_weight}/${max_scaffold_generations}/${lr_pretraining}/${IC_threshold}/${data_size}`)
+                .then(response => {
+                    if (!response.ok) {
+                        return response.json().then(err => { throw new Error(err.error) });
+                    }
+                    return response.blob();
+                })
+                .then(blob => {
+                    const imageUrl = URL.createObjectURL(blob);
+                    document.getElementById('histograms-container-2').style.display = 'block';
+                    
+                    // Create an image element and set its source to the blob URL
+                    const img = document.createElement('img');
+                    img.src = imageUrl;
+                    
+                    // Clear previous content and append the new image
+                    const container = document.getElementById('histogram2');
+                    container.innerHTML = '';
+                    container.appendChild(img);
+
+                    printToConsole("Model test complete. Plot displayed.");
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    printToConsole("Error testing model: " + error.message);
+                });
+
+
+          
+            document.getElementById('runmodel_executeButton').addEventListener('click', function() {
+                var REAL_1H_Path = encodeURIComponent(document.getElementById('1H_pathInput').value);
+                var REAL_13C_Path = encodeURIComponent(document.getElementById('13C_pathInput').value);
+                var REAL_HSQC_Path = encodeURIComponent(document.getElementById('HSQC_pathInput').value);
+                var REAL_COSY_Path = encodeURIComponent(document.getElementById('COSY_pathInput').value);
+                var REAL_IR_Path = encodeURIComponent(document.getElementById('IR_pathInput').value);
+
+                var MNSValue = parseInt(document.getElementById('MNS_numberInput_2').value);
+                var Checkpoint_Path = encodeURIComponent(document.getElementById('Checkpoint_pathInput_2').value);
+                var DataSize = parseInt(document.getElementById('data_size_numberInput_2').value);
+
+                fetch(`/run_model_exp_data?Checkpoint_Path=${Checkpoint_Path}&MNS_Value=${MNSValue}&REAL_1H_Path=${REAL_1H_Path}&REAL_13C_Path=${REAL_13C_Path}&REAL_HSQC_Path=${REAL_HSQC_Path}&REAL_COSY_Path=${REAL_COSY_Path}&REAL_IR_Path=${REAL_IR_Path}&DataSize=${DataSize}`)
+                .then(response => {
+                    if (!response.ok) {
+                        return response.json().then(err => { throw new Error(err.error) });
+                    }
+                    return response.blob();
+                })
+                .then(blob => {
+                    const imageUrl = URL.createObjectURL(blob);
+                    document.getElementById('histograms-container-3').style.display = 'block';
+                    
+                    // Create an image element and set its source to the blob URL
+                    const img = document.createElement('img');
+                    img.src = imageUrl;
+                    
+                    // Clear previous content and append the new image
+                    const container = document.getElementById('histogram3');
+                    container.innerHTML = '';
+                    container.appendChild(img);
+
+                    printToConsole("Model run complete. Plot displayed.");
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    printToConsole("Error running model: " + error.message);
+                });
+            });
+            // ^^^------------------ Section 4 ---------------------^^^
+
+            // vvv------------------ Section 5 ---------------------vvv
+            function loadColoredMolecule(index) {
+                for(let i = 0; i < 5; i++) {
+                    fetch(`/colored_molecule/${index}/${i}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            console.log("Received data:", data);
+                            if (data.error) {
+                                console.error('Error:', data.error);
+                                return;
+                            }
+                            // Clear existing content
+                            const container = document.getElementById(`molecule-container${i}`);
+                            container.innerHTML = '';
+                            
+                            // Add new content
+                            container.insertAdjacentHTML('beforeend', data.colored_molecule);
+
+                            let coloredSmileDiv = document.createElement('div');
+                            coloredSmileDiv.innerHTML = data.colored_smile;
+                            container.appendChild(coloredSmileDiv);
+
+                            console.log('SMILES:', data.smile);
+                        })
+                        .catch(error => console.error('Error fetching molecule image:', error));
+                }
+            }
+
+            function drawGradient() {
+                    var canvas = document.getElementById('gradientCanvas');
+                    var ctx = canvas.getContext('2d');
+                    var gradient = ctx.createLinearGradient(0, 0, 1000, 0);  // Adjust as per your canvas size
+
+                    // Define gradient colors
+                    gradient.addColorStop(0, 'rgb(255, 0, 178.5)');
+                    gradient.addColorStop(1, 'rgb(153, 229.5, 178.5)');
+
+                    // Fill with gradient
+                    ctx.fillStyle = gradient;
+                    ctx.fillRect(0, 0, 1000, 50);  // Adjust dimensions as per your canvas size
+
+                    // Add event listener for mouse move
+                    canvas.addEventListener('mousemove', function(event) {
+                        var rect = canvas.getBoundingClientRect();
+                        var x = event.clientX - rect.left;
+                        var ratio = x / canvas.width;
+                        var position = ratio.toFixed(3); // Limit to two decimal places
+
+                        // Show tooltip
+                        var tooltip = document.getElementById('tooltip');
+                        var scrollY = window.scrollY; // Get the vertical scroll position
+
+                        tooltip.style.display = 'block';
+                        tooltip.style.left = event.clientX + 'px';  // Position relative to mouse pointer
+                        tooltip.style.top = (event.clientY + scrollY - 40) + 'px'; // Adjust distance above canvas
+                        tooltip.textContent = 'Probability: ' + position;
+                    });
+
+
+                    // Hide tooltip on mouse out
+                    canvas.addEventListener('mouseout', function() {
+                        var tooltip = document.getElementById('tooltip');
+                        tooltip.style.display = 'none';
+                    });
+            }
+
+            function moleculeClicked(index) {
+                    printToConsole(`Molecule ${index} clicked`);
+
+                }
+
+            document.getElementById('loadcompare_executeButton').addEventListener('click', function() {
+                var moleculeindex = document.getElementById('moleculeindex_numberInput').value;
+                loadColoredMolecule(moleculeindex);
+                drawGradient();
+                printToConsole("Loading molecule... ")
+            });
+            // ^^^------------------ Section 5 ---------------------^^^
+
+            let currentNMRType_dual = '1H';
+
+           // Add event listeners for NMR type buttons
+           document.querySelectorAll('.nmr-type-btn-dual').forEach(button => {
+                button.addEventListener('click', function() {
+                    currentNMRType_dual = this.getAttribute('data-type');
+                    // plotDoubleNMR(currentNMRType_dual);
+                });
+            });
+
+            // Add event listener for the Plot Spectra button
+            document.getElementById('plotSpectraButton').addEventListener('click', function() {
+                plotDoubleNMR(currentNMRType_dual);
+            });
+
+            function plotDoubleNMR(nmrType) {
+                const experimentalIndex = document.getElementById('experimentalIndexInput').value;
+                const simulatedIndex = document.getElementById('simulatedIndexInput').value;                
+                
+                fetch(`/plot_dual_NMR?nmr_type=${nmrType}&exp_index=${experimentalIndex}&sim_index=${simulatedIndex}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log('Received data:', data); // Log the data for debugging
+                        try {
+                            const plotData = JSON.parse(data);
+                            Plotly.newPlot('nmr_plot_dual', plotData.data, plotData.layout);
+                        } catch (error) {
+                            console.error('Error parsing plot data:', error);
+                            printToConsole("Error parsing NMR plot data.");
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error plotting NMR:', error);
+                        printToConsole("Error plotting NMR spectrum.");
+                    });
+            }
+            // ^^^------------------ Section 6 ---------------------^^^
+
+
+
+            // Listen for file selection on the hidden file input
+            document.getElementById('fileInput').addEventListener('change', function() {
+                // Get selected files
+                const selectedFiles = this.files;
+
+                // Get the file type from the custom attribute
+                const fileType = this.getAttribute('data-file-type');
+
+                // Create a FormData object to store files and file type
+                const formData = new FormData();
+                for (let i = 0; i < selectedFiles.length; i++) {
+                    formData.append('file', selectedFiles[i]);
+                }
+                formData.append('file_type', fileType);
+
+                // Send files to Flask route via fetch or XMLHttpRequest
+                fetch('/upload_files', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => {
+                    // Handle response from Flask route if needed
+                    console.log('Response from server:', response);
+                })
+                .catch(error => {
+                    console.error('Error uploading files:', error);
+                });
+            });
+
+            document.addEventListener('DOMContentLoaded', function () {
+            document.getElementById('molecule_image').src = '';
+            
+       
+        </script>
+    </body>
+</html>

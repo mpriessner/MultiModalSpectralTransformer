@@ -1,0 +1,18 @@
+2024-08-07 08:12:45.034608: Simulating...
+2024-08-07 08:12:45.034620: Function simulate: Start of Simulation
+2024-08-07 08:12:45.034622: Function simulate: Simulation Succeeded
+2024-08-07 08:12:45.034625: NMR Plot: Run Plot_NMR
+2024-08-07 08:12:45.034627: NMR Plot: Loading data successful
+2024-08-07 08:12:45.034629: NMR Plot: Plot_NMR 3
+2024-08-07 08:12:45.034631: NMR Plot: Extraction of datapoints successful
+2024-08-07 08:12:45.034633: NMR Plot: Plotting of Spectrum successful
+2024-08-07 08:12:45.034635: Running improvement cycle...
+2024-08-07 08:12:45.034637: Running run_IC: Loaded Config
+2024-08-07 08:12:45.034639: Running run_IC: Starting Improvement Cycle
+2024-08-07 08:12:45.034641: Running test_model_IC: Configs loaded
+2024-08-07 08:12:45.034643: Plotted Molecule
+2024-08-07 08:12:45.034645: Model test complete. Plot displayed.
+2024-08-07 08:12:45.034647: Running test_model_IC: Variables extracted
+2024-08-07 08:12:45.034649: Running test_model_IC: Finished IC test
+2024-08-07 08:12:45.034651: Performance: 0.274868210329968
+2024-08-07 08:12:45.034653: Running run_IC: Finished

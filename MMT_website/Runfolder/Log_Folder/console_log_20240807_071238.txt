@@ -1,0 +1,28 @@
+2024-08-07 07:12:38.998468: Simulating...
+2024-08-07 07:12:38.998478: Function simulate: Start of Simulation
+2024-08-07 07:12:38.998481: Function simulate: Simulation Succeeded
+2024-08-07 07:12:38.998483: NMR Plot: Run Plot_NMR
+2024-08-07 07:12:38.998485: NMR Plot: Loading data successful
+2024-08-07 07:12:38.998487: NMR Plot: Plot_NMR 3
+2024-08-07 07:12:38.998489: NMR Plot: Extraction of datapoints successful
+2024-08-07 07:12:38.998490: NMR Plot: Plotting of Spectrum successful
+2024-08-07 07:12:38.998492: NMR Plot: Run Plot_NMR
+2024-08-07 07:12:38.998494: NMR Plot: Loading data successful
+2024-08-07 07:12:38.998496: NMR Plot: Plot_NMR 3
+2024-08-07 07:12:38.998498: NMR Plot: Extraction of datapoints successful
+2024-08-07 07:12:38.998500: NMR Plot: Plotting of Spectrum successful
+2024-08-07 07:12:38.998502: NMR Plot: Run Plot_NMR
+2024-08-07 07:12:38.998504: NMR Plot: Loading data successful
+2024-08-07 07:12:38.998506: NMR Plot: Plot_NMR 3
+2024-08-07 07:12:38.998507: NMR Plot: Extraction of datapoints successful
+2024-08-07 07:12:38.998509: NMR Plot: Plotting of Spectrum successful
+2024-08-07 07:12:38.998511: NMR Plot: Run Plot_NMR
+2024-08-07 07:12:38.998513: NMR Plot: Loading data successful
+2024-08-07 07:12:38.998515: NMR Plot: Plot_NMR 3
+2024-08-07 07:12:38.998517: NMR Plot: Extraction of datapoints successful
+2024-08-07 07:12:38.998519: NMR Plot: Plotting of Spectrum successful
+2024-08-07 07:12:38.998520: NMR Plot: Run Plot_NMR
+2024-08-07 07:12:38.998522: NMR Plot: Loading data successful
+2024-08-07 07:12:38.998524: NMR Plot: Plot_NMR 3
+2024-08-07 07:12:38.998526: NMR Plot: Extraction of datapoints successful
+2024-08-07 07:12:38.998528: NMR Plot: Plotting of Spectrum successful
