@@ -56,6 +56,11 @@ The project includes several Jupyter notebooks for different purposes:
    - This notebook is used to produce simulated IR data using the Chemprop-IR network.
    - [Link to Chemprop-IR paper](https://pubs.acs.org/doi/abs/10.1021/acs.jcim.1c00055)
 
+4. **4.0_Chemprop_IR_Data_Generation.ipynb**
+   - Visualizes molecules with color-coded atoms showing probabilities
+   - Creates SVGs, labels, and SMILES string visualizations
+   - Supports colored and non-colored molecule rendering from pickle files
+
 Please refer to these notebooks for detailed procedures on data generation and experiment reproduction.
 
 
