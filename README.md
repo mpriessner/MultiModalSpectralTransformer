@@ -10,7 +10,7 @@ Publication:
 - Preprint: [ChemRxiv](https://chemrxiv.org/engage/chemrxiv/article-details/67339b2df9980725cff94c52)
 - Data Repository: [Zenodo](https://doi.org/10.5281/zenodo.14712886)
 
-![MultiModalSpectralTransformer Architecture](dump/MMT.png)
+![MultiModalSpectralTransformer Architecture](dump/TOC.png)
 
 ## Computational Requirements
 
