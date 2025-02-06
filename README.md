@@ -1,14 +1,14 @@
-# MultiModalTransformer
+# MultiModalSpectralTransformer
 
-MultiModalTransformer is a transformer-based architecture that integrates various spectroscopic modalities (NMR, HSQC, COSY, IR) for automated molecular structure prediction, complete with a data generation pipeline and user-friendly HTML interface.
+MultiModalSpectralTransformer is a transformer-based architecture that integrates various spectroscopic modalities (NMR, HSQC, COSY, IR) for automated molecular structure prediction, complete with a data generation pipeline and user-friendly HTML interface.
 
 Implementation of the following publication: 
 
-**Enhancing Molecular Structure Elucidation with the MultiModalTransformer: Integrating Spectroscopic Modalities and Iterative Improvement Cycles**
+**Advancing Structure Elucidation with a Flexible Multi-Spectral AI Model**
 
 Link to the paper: [link](https://dummy.com) (dummy)
 
-![MultiModalTransformer Architecture](dump/MMT.png)
+![MultiModalSpectralTransformer Architecture](dump/MMT.png)
 
 
 ## Computational Requirements
