@@ -22,6 +22,18 @@ This project requires significant computational resources:
 
 Please ensure your system meets these requirements before proceeding with the installation and usage of MultiModalTransformer.
 
+
+## Software Usage Instructions
+
+Detailed instructions on how to use the software, including the full improvement cycle workflow and the HTML GUI interface, are provided in the Electronic Supplementary Information (ESI) of the paper. Please refer to Section 3 of the ESI for a comprehensive user manual.
+
+The ESI contains:
+- Step-by-step guide for data preparation
+- Instructions for model training and fine-tuning
+- Tutorial on using the improvement cycle
+- Guide for interpreting model outputs and explanations
+- Troubleshooting tips and best practices
+
 ## Folder Structure
 
 After cloning the repository and adding the extra models, your folder structure should look like this:
