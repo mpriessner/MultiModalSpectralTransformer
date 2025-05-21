@@ -1,0 +1,43 @@
+# Ignore models directory containing large model files
+/models/
+
+# Python bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Distribution / packaging
+dist/
+build/
+*.egg-info/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# Environment
+.env
+.venv
+env/
+venv/
+ENV/
+
+# OS specific files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# IDE specific files
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Large log files
+*.log
+
+# Specific large files in deep-molecular-optimization
+deep-molecular-optimization/experiments/evaluation_transformer/*/evaluation_*/generate.log
