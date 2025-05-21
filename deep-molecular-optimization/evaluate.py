@@ -15,6 +15,7 @@ import utils.file as uf
 import utils.plot as up
 import configuration.opts as opts
 from postprocess import draw_molecules
+from configuration import paths
 
 NUM_WORKERS = 16
 
@@ -22,12 +23,29 @@ class EvaluationRunner:
     """Evaluate the generated molecules"""
 
     def __init__(self, data_path, num_samples, range_evaluation, without_property=False):
-
+        # First get the parent directory for the log file
         self.save_path = uf.get_parent_dir(data_path)
+        
+        # Initialize the logger
         global LOG
         LOG = ul.get_logger(name="evaluation", log_path=os.path.join(self.save_path, 'evaluation.log'))
+        
+        # Use the path resolution function to find the data file
+        resolved_path = paths.resolve_data_path(data_path)
+        if resolved_path and resolved_path != data_path:
+            LOG.info(f"Resolved data path from {data_path} to {resolved_path}")
+            data_path = resolved_path
+        elif not os.path.exists(data_path):
+            LOG.warning(f"Data file not found at {data_path} and could not be resolved")
+            # We'll continue with the original path and let the code handle the error later
         self.data_path = data_path
-        self.data = pd.read_csv(self.data_path, sep=",")
+        
+        try:
+            self.data = pd.read_csv(self.data_path, sep=",")
+        except Exception as e:
+            LOG.error(f"Error loading data from {self.data_path}: {str(e)}")
+            raise
+            
         self.num_samples = num_samples
         self.without_property = without_property
 
@@ -35,7 +53,10 @@ class EvaluationRunner:
         self.range_evaluation = range_evaluation
         if self.range_evaluation != "":
             self.output_path = os.path.join(self.output_path, '{}'.format(self.range_evaluation))
-        uf.make_directory(self.output_path)
+            
+        # Create output directory if it doesn't exist
+        os.makedirs(self.output_path, exist_ok=True)
+        LOG.info(f"Saving evaluation results to: {self.output_path}")
 
 
     def evaluation_statistics(self):

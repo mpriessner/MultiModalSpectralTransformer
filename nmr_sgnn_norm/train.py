@@ -35,13 +35,14 @@ def train(args):
     
     use_training = False
 
-    if not os.path.exists('./model'):
-        os.mkdir('./model')
+    # Create models/sgnn directory if it doesn't exist
+    model_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'models', 'sgnn')
+    os.makedirs(model_dir, exist_ok=True)
     
-    if memo:
-        model_path = f'./model/{target}_{graph_representation}_{message_passing_mode}_{readout_mode}_{fold_seed}_{memo}.pt'
+    if memo is not None:
+        model_path = os.path.join(model_dir, f'{target}_{graph_representation}_{message_passing_mode}_{readout_mode}_{fold_seed}_{memo}.pt')
     else:
-        model_path = f'./model/{target}_{graph_representation}_{message_passing_mode}_{readout_mode}_{fold_seed}.pt'
+        model_path = os.path.join(model_dir, f'{target}_{graph_representation}_{message_passing_mode}_{readout_mode}_{fold_seed}.pt')
 
     
     random_seed = 27407 + fold_seed

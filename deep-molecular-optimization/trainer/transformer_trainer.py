@@ -16,6 +16,7 @@ from models.transformer.module.decode import decode
 from trainer.base_trainer import BaseTrainer
 from models.transformer.module.label_smoothing import LabelSmoothing
 from models.transformer.module.simpleloss_compute import SimpleLossCompute
+from configuration import paths
 
 
 class TransformerTrainer(BaseTrainer):
@@ -35,9 +36,15 @@ class TransformerTrainer(BaseTrainer):
             model = EncoderDecoder.make_model(vocab_size, vocab_size, N=opt.N,
                                           d_model=opt.d_model, d_ff=opt.d_ff, h=opt.H, dropout=opt.dropout)
         else:
-            # Load model
-            file_name = os.path.join(self.save_path, f'checkpoint/model_{opt.starting_epoch-1}.pt')
-            model= EncoderDecoder.load_from_file(file_name)
+            # Use the path resolution function to find the model file
+            model_path = paths.resolve_model_path(None, epoch=opt.starting_epoch-1)
+            
+            if not model_path:
+                self.LOG.info(f"No model found for epoch {opt.starting_epoch-1}, initializing new model")
+                return self.get_model(opt, vocab, device)
+                    
+            self.LOG.info(f"Loading model from {model_path}")
+            model = EncoderDecoder.load_from_file(model_path)
 
         if opt.use_data_parallel:
             model = nn.DataParallel(model)
@@ -192,11 +199,33 @@ class TransformerTrainer(BaseTrainer):
             'model_parameters': self._get_model_parameters(vocab_size, opt)
         }
 
-        file_name = os.path.join(self.save_path, f'checkpoint/model_{epoch}.pt')
-        uf.make_directory(file_name, is_dir=False)
+        self._save_checkpoint(save_dict, epoch, opt)
 
-        torch.save(save_dict, file_name)
-
+    def _save_checkpoint(self, save_dict, epoch, opt):
+        """Save model to disk"""
+        # Create the checkpoint directory in the new location
+        checkpoint_dir = os.path.join(paths.MOL2MOL_MODEL_DIR, 'checkpoint')
+        os.makedirs(checkpoint_dir, exist_ok=True)
+        
+        # Save to the new location
+        new_file_name = os.path.join(checkpoint_dir, f'model_{epoch}.pt')
+        
+        try:
+            torch.save(save_dict, new_file_name)
+            self.LOG.info(f"Model saved to {new_file_name}")
+        except Exception as e:
+            self.LOG.error(f"Error saving model to {new_file_name}: {str(e)}")
+        
+        # Also save to the original location for backward compatibility
+        try:
+            old_file_name = os.path.join(self.save_path, f'checkpoint/model_{epoch}.pt')
+            os.makedirs(os.path.dirname(old_file_name), exist_ok=True)
+            torch.save(save_dict, old_file_name)
+            self.LOG.info(f"Model also saved to {old_file_name} for backward compatibility")
+        except Exception as e:
+            self.LOG.error(f"Error saving model to backup location {old_file_name}: {str(e)}")
+            self.LOG.warning("Continuing despite backup save failure")
+        
     def train(self, opt):
         # Load vocabulary
         with open(os.path.join(opt.data_path, 'vocab.pkl'), "rb") as input_file:

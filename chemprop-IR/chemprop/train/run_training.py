@@ -165,12 +165,13 @@ def run_training(args: Namespace, logger: Logger = None) -> List[float]:
     # Train ensemble of models
     for model_idx in range(args.ensemble_size):
         # Tensorboard writer
-        save_dir = os.path.join(args.save_dir, f'model_{model_idx}')
-        makedirs(save_dir)
+        # Use the new path resolution function to get the save directory
+        save_dir = get_save_dir(args.save_dir, model_idx)
         try:
             writer = SummaryWriter(log_dir=save_dir)
         except:
             writer = SummaryWriter(logdir=save_dir)
+        debug(f'Using save directory: {save_dir}')
         # Load/build model
         if args.checkpoint_paths is not None:
             debug(f'Loading model {model_idx} from {args.checkpoint_paths[model_idx]}')

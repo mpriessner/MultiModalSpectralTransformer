@@ -5,7 +5,12 @@ import argparse
 from data import nmrshiftdb2_get_data
 from train import train
 
-data_path = './data'
+# Path to the new location in the models/sgnn directory
+rel_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+data_path = os.path.join(rel_path, 'models', 'sgnn', 'data')
+
+# Create the data directory if it doesn't exist
+os.makedirs(data_path, exist_ok=True)
 arg_parser = argparse.ArgumentParser()
 
 arg_parser.add_argument('--target', help ='13C or 1H', choices=['13C', '1H'], default='13C', type = str)

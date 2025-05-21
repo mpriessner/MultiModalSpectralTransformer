@@ -8,17 +8,27 @@ from tensorboardX import SummaryWriter
 import utils.log as ul
 import models.dataset as md
 import preprocess.vocabulary as mv
+from configuration import paths
 
 
 class BaseTrainer(ABC):
 
     def __init__(self, opt):
-
-        self.save_path = os.path.join('experiments', opt.save_directory)
-        self.summary_writer = SummaryWriter(logdir=os.path.join(self.save_path, 'tensorboard'))
-        LOG = ul.get_logger(name="train_model", log_path=os.path.join(self.save_path, 'train_model.log'))
+        # Use the checkpoint directory from paths configuration
+        self.save_path = os.path.join(paths.CHECKPOINT_DIR, opt.save_directory)
+        os.makedirs(self.save_path, exist_ok=True)
+        
+        # Create tensorboard directory
+        tensorboard_dir = os.path.join(self.save_path, 'tensorboard')
+        os.makedirs(tensorboard_dir, exist_ok=True)
+        self.summary_writer = SummaryWriter(logdir=tensorboard_dir)
+        
+        # Set up logging
+        log_path = os.path.join(self.save_path, 'train_model.log')
+        LOG = ul.get_logger(name="train_model", log_path=log_path)
         self.LOG = LOG
         self.LOG.info(opt)
+        self.LOG.info(f"Saving checkpoints to: {self.save_path}")
 
     def initialize_dataloader(self, data_path, batch_size, vocab, data_type, without_property=False):
         # Read train or validation

@@ -13,12 +13,10 @@ class GraphDataset():
         self.load()
 
     def load(self):
-        relative_path = f'/projects/cc/se_users/knlr326/1_NMR_project/2_Notebooks/MultiModalSpectralTransformer/nmr_sgnn_norm/data/nmrshiftdb2_graph_{self.graph_representation}_{self.target}.npz'
-        #import IPython; IPython.embed();
-        rel_path = os.getcwd()
-        npy_path = rel_path + f"/nmr_sgnn_norm/data/nmrshiftdb2_graph_{self.graph_representation}_{self.target}.npz"
+        # Path to the new location in the models/sgnn directory
+        rel_path = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+        npy_path = os.path.join(rel_path, 'models', 'sgnn', 'data', f'nmrshiftdb2_graph_{self.graph_representation}_{self.target}.npz')
         [mol_dict] = np.load(npy_path, allow_pickle=True)['data']
-        #[mol_dict] = np.load(relative_path, allow_pickle=True)['data']
 
         self.n_node = mol_dict['n_node']
         self.n_edge = mol_dict['n_edge']

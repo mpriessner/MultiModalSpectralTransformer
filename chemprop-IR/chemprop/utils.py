@@ -1,10 +1,13 @@
-import logging
-import math
-import os
+from argparse import ArgumentParser, Namespace
 import csv
-from typing import Callable, List, Tuple, Union
-from argparse import Namespace
+from functools import wraps
+import logging
+import os
+import pickle
+from typing import Callable, List, Union
+import random
 
+import numpy as np
 from sklearn.metrics import auc, mean_absolute_error, mean_squared_error, precision_recall_curve, r2_score,\
     roc_auc_score, accuracy_score, log_loss
 import torch
@@ -12,9 +15,11 @@ import torch.nn as nn
 from torch.optim import Adam, Optimizer, Adadelta, Adagrad
 from torch.optim.lr_scheduler import _LRScheduler
 
+from chemprop.args import PredictArgs, TrainArgs
 from chemprop.data import StandardScaler
 from chemprop.models import build_model, MoleculeModel, mpn
 from chemprop.nn_utils import NoamLR
+from chemprop.paths import resolve_model_path, get_save_dir
 from chemprop.train.spectral_loss import sid, wasserstein, jsd, stmse, srmse, smse
 
 
@@ -48,6 +53,9 @@ def save_checkpoint(path: str,
     :param args: Arguments namespace.
     :param path: Path where checkpoint will be saved.
     """
+    # Create directory if it doesn't exist
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    
     state = {
         'args': args,
         'state_dict': model.state_dict(),
@@ -62,7 +70,13 @@ def save_checkpoint(path: str,
     }
     if hasattr(model,'spectral_mask'):
         state['spectral_mask']=model.spectral_mask
-    torch.save(state, path)
+    
+    try:
+        torch.save(state, path)
+        logging.info(f"Model saved to {path}")
+    except Exception as e:
+        logging.error(f"Error saving model to {path}: {str(e)}")
+        raise
 
 
 def load_checkpoint(path: str,
@@ -81,10 +95,24 @@ def load_checkpoint(path: str,
     :return: The loaded MoleculeModel.
     """
     debug = logger.debug if logger is not None else print
+    
+    # Try to resolve the path if it doesn't exist
+    if not os.path.exists(path):
+        resolved_path = resolve_model_path(os.path.basename(path))
+        if resolved_path is not None:
+            debug(f"Resolved model path from {path} to {resolved_path}")
+            path = resolved_path
+        else:
+            debug(f"Could not find model at {path} and path resolution failed")
 
     # Load model and args
-    state = torch.load(path, map_location=lambda storage, loc: storage)
-    args, loaded_state_dict = state['args'], state['state_dict']
+    try:
+        state = torch.load(path, map_location=lambda storage, loc: storage)
+        args, loaded_state_dict = state['args'], state['state_dict']
+        debug(f"Successfully loaded model from {path}")
+    except Exception as e:
+        debug(f"Error loading model from {path}: {str(e)}")
+        raise
 
     if current_args is not None:
         args = current_args

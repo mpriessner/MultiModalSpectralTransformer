@@ -17,6 +17,7 @@ import configuration.opts as opts
 from models.transformer.module.decode import decode
 from models.transformer.encode_decode.model import EncoderDecoder
 from models.seq2seq.model import Model
+from configuration import paths
 
 
 class GenerateRunner():
@@ -64,17 +65,33 @@ class GenerateRunner():
         dataloader_test = self.initialize_dataloader(opt, self.vocab, opt.test_file_name,
                                                      without_property=opt.without_property)
 
-        # Load model
-        file_name = os.path.join(opt.model_path, f'model_{opt.epoch}.pt')
+        # Use the path resolution function to find the model file
+        model_path = paths.resolve_model_path(None, epoch=opt.epoch)
+        
+        # If model not found with the resolver, try the original path as fallback
+        if not model_path and hasattr(opt, 'model_path') and opt.model_path:
+            old_model_path = os.path.join(opt.model_path, f'model_{opt.epoch}.pt')
+            if os.path.exists(old_model_path):
+                model_path = old_model_path
+                LOG.info(f"Using original model path: {model_path}")
+        
+        if not model_path:
+            raise FileNotFoundError(f"Model file for epoch {opt.epoch} not found in any expected location")
+        
+        LOG.info(f"Loading model from: {model_path}")
+        
+        # Load the model
         if opt.model_choice == 'transformer':
-            model = EncoderDecoder.load_from_file(file_name)
+            model = EncoderDecoder.load_from_file(model_path)
             model.to(device)
             model.eval()
         elif opt.model_choice == 'seq2seq':
-            model = Model.load_from_file(file_name, evaluation_mode=True)
+            model = Model.load_from_file(model_path, evaluation_mode=True)
             # move to GPU
             model.network.encoder.to(device)
             model.network.decoder.to(device)
+        
+        LOG.info(f"Successfully loaded model from: {model_path}")
 
         max_len = cfgd.DATA_DEFAULT['max_sequence_length']
         df_list = []
