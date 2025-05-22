@@ -450,7 +450,11 @@ def load_model(target, save_path):
     script_dir = os.path.dirname(__file__)
 
     # Build the base path to the models directory relative to the script's location
-    models_base_path = os.path.abspath(os.path.join(script_dir, '../nmr_sgnn_norm/model'))
+    # Updated to use the new models/sgnn directory structure
+    project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    models_base_path = os.path.join(project_root, 'models', 'sgnn', 'model')
+    
+    print(f"Looking for models in: {models_base_path}")
 
     # Define model paths based on the target
     if target == "1H":
@@ -459,6 +463,31 @@ def load_model(target, save_path):
         model_path = os.path.join(models_base_path, '13C_sparsified_proposed_proposed_1.pt')
     else:
         raise ValueError(f"Unsupported target: {target}")
+        
+    # Check if the model file exists
+    if not os.path.exists(model_path):
+        # Try alternative paths
+        alternative_paths = [
+            os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'nmr_sgnn_norm', 'model'),
+            os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'models', 'sgnn_norm', 'model'),
+            os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'models', 'sgnn'),
+            os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'nmr_sgnn_norm'),
+        ]
+        
+        found = False
+        for alt_base_path in alternative_paths:
+            alt_model_path = os.path.join(alt_base_path, f"{target}_sparsified_proposed_proposed_1.pt")
+            print(f"Trying alternative path: {alt_model_path}")
+            if os.path.exists(alt_model_path):
+                model_path = alt_model_path
+                found = True
+                print(f"Found model at alternative path: {model_path}")
+                break
+        
+        if not found:
+            raise FileNotFoundError(f"Model file not found: {model_path}. Please make sure the model files are in the correct location.")
+    
+    print(f"Loading model from: {model_path}")
     net.load_state_dict(torch.load(model_path))
     return net
 
