@@ -14,8 +14,9 @@ class GraphDataset():
 
     def load(self):
         # Path to the new location in the models/sgnn directory
-        rel_path = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-        npy_path = os.path.join(rel_path, 'models', 'sgnn', 'data', f'nmrshiftdb2_graph_{self.graph_representation}_{self.target}.npz')
+        # Use the correct path to the data files
+        project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        npy_path = os.path.join(project_root, 'models', 'sgnn', 'data', f'nmrshiftdb2_graph_{self.graph_representation}_{self.target}.npz')
         [mol_dict] = np.load(npy_path, allow_pickle=True)['data']
 
         self.n_node = mol_dict['n_node']
