@@ -694,20 +694,54 @@ def create_shift_intensity_label_data(shifts, coupling_patterns, atoms_done, spe
     return shift_intensity_label_data, shift_intensity_data
 
 
-def run_1H_generation(config):
-    # Look for SDF files in the subfolder
+def get_sdf_search_path(config):
+    """Helper function to get the correct path for SDF files based on the config"""
     folder_path = config.SGNN_gen_folder_path
+    
+    # Ensure ran_num is set
+    if not hasattr(config, 'ran_num'):
+        config.ran_num = 1  # Default value if not set
+        print(f"Warning: ran_num not set in config, using default value {config.ran_num}")
+    
+    # Construct the subfolder path
     sdf_subfolder = os.path.join(folder_path, f"sdf_{config.ran_num}")
     
-    # Use the subfolder if it exists, otherwise use the main folder
+    # Check if the subfolder exists
     if os.path.exists(sdf_subfolder):
-        search_path = sdf_subfolder
+        print(f"Using SDF subfolder: {sdf_subfolder}")
+        return sdf_subfolder
     else:
-        search_path = folder_path
+        # If not, look for any sdf_* subfolder
+        sdf_subfolders = [d for d in os.listdir(folder_path) if os.path.isdir(os.path.join(folder_path, d)) and d.startswith('sdf_')]
+        if sdf_subfolders:
+            # Use the most recent subfolder (assuming higher ran_num is more recent)
+            latest_subfolder = sorted(sdf_subfolders, key=lambda x: int(x.split('_')[1]), reverse=True)[0]
+            latest_path = os.path.join(folder_path, latest_subfolder)
+            # Update the ran_num in the config to match the subfolder
+            config.ran_num = int(latest_subfolder.split('_')[1])
+            print(f"Found SDF subfolder: {latest_path}, updated ran_num to {config.ran_num}")
+            return latest_path
+        else:
+            print(f"No SDF subfolder found, using main folder: {folder_path}")
+            return folder_path
+
+def run_1H_generation(config):
+    # Look for SDF files in the subfolder
+    search_path = get_sdf_search_path(config)
     
-    nmr_files = glob.glob(os.path.join(search_path, "*"))
-    nmr_files = [file for file in nmr_files if "NMR_" in file.split("/")[-1]]
-    nmr_files = [file for file in nmr_files if not ".mol" in file]
+    # Get all files in the directory
+    all_files = glob.glob(os.path.join(search_path, "*"))
+    print(f"[1H] Found {len(all_files)} total files in {search_path}")
+    
+    # Filter for NMR files
+    nmr_files = [file for file in all_files if "NMR_" in os.path.basename(file)]
+    print(f"[1H] Found {len(nmr_files)} NMR files")
+    
+    # Filter out .mol files
+    nmr_files = [file for file in nmr_files if not file.endswith(".mol")]
+    print(f"[1H] After filtering .mol files: {len(nmr_files)} files remain")
+    
+    # Sort the files
     nmr_files = sorted(nmr_files, reverse=False)
 
 
@@ -831,10 +865,22 @@ def consolidate_peaks(averaged_shifts, symmetric_positions):
 
 def run_13C_generation(config):
     
-    folder_path = config.SGNN_gen_folder_path
-    nmr_files = glob.glob(folder_path+"/*")
-    nmr_files = [file for file in nmr_files if "NMR_" in file.split("/")[-1] ]
-    nmr_files = [file for file in nmr_files if not ".mol" in file]
+    # Look for SDF files in the subfolder
+    search_path = get_sdf_search_path(config)
+    
+    # Get all files in the directory
+    all_files = glob.glob(os.path.join(search_path, "*"))
+    print(f"Found {len(all_files)} total files in {search_path}")
+    
+    # Filter for NMR files
+    nmr_files = [file for file in all_files if "NMR_" in os.path.basename(file)]
+    print(f"Found {len(nmr_files)} NMR files")
+    
+    # Filter out .mol files
+    nmr_files = [file for file in nmr_files if not file.endswith(".mol")]
+    print(f"After filtering .mol files: {len(nmr_files)} files remain")
+    
+    # Sort the files
     nmr_files = sorted(nmr_files, reverse=False)
 
     ### Stores
@@ -1101,10 +1147,22 @@ def plot_and_save_cosy_spectrum_with_zoom_no_duplicates(heavy_atom_hydrogen_shif
 
 
 def run_COSY_generation(config):
-    folder_path = config.SGNN_gen_folder_path
-    nmr_files = glob.glob(folder_path+"/*")
-    nmr_files = [file for file in nmr_files if "NMR_" in file.split("/")[-1] ]
-    nmr_files = [file for file in nmr_files if not ".mol" in file]
+    # Look for SDF files in the subfolder
+    search_path = get_sdf_search_path(config)
+    
+    # Get all files in the directory
+    all_files = glob.glob(os.path.join(search_path, "*"))
+    print(f"[COSY] Found {len(all_files)} total files in {search_path}")
+    
+    # Filter for NMR files
+    nmr_files = [file for file in all_files if "NMR_" in os.path.basename(file)]
+    print(f"[COSY] Found {len(nmr_files)} NMR files")
+    
+    # Filter out .mol files
+    nmr_files = [file for file in nmr_files if not file.endswith(".mol")]
+    print(f"[COSY] After filtering .mol files: {len(nmr_files)} files remain")
+    
+    # Sort the files
     nmr_files = sorted(nmr_files, reverse=False)
 
     ### Stores
@@ -1178,10 +1236,22 @@ def run_COSY_generation(config):
 
 def run_HSQC_generation(config):
     
-    folder_path = config.SGNN_gen_folder_path
-    nmr_files = glob.glob(folder_path+"/*")
-    nmr_files = [file for file in nmr_files if "NMR_" in file.split("/")[-1] ]
-    nmr_files = [file for file in nmr_files if not ".mol" in file]
+    # Look for SDF files in the subfolder
+    search_path = get_sdf_search_path(config)
+    
+    # Get all files in the directory
+    all_files = glob.glob(os.path.join(search_path, "*"))
+    print(f"[HSQC] Found {len(all_files)} total files in {search_path}")
+    
+    # Filter for NMR files
+    nmr_files = [file for file in all_files if "NMR_" in os.path.basename(file)]
+    print(f"[HSQC] Found {len(nmr_files)} NMR files")
+    
+    # Filter out .mol files
+    nmr_files = [file for file in nmr_files if not file.endswith(".mol")]
+    print(f"[HSQC] After filtering .mol files: {len(nmr_files)} files remain")
+    
+    # Sort the files
     nmr_files = sorted(nmr_files, reverse=False)
     ### Stores
     smiles_list = []
@@ -1232,17 +1302,44 @@ def run_HSQC_generation(config):
 
 
 def main_run_data_generation(config):
+    # Ensure ran_num is set consistently for all functions
+    if not hasattr(config, 'ran_num'):
+        config.ran_num = random.randint(1, 10000)
+        print(f"Setting random ran_num: {config.ran_num}")
+    else:
+        print(f"Using existing ran_num: {config.ran_num}")
     
+    # Create necessary directories
+    if not os.path.exists(config.SGNN_gen_folder_path):
+        os.makedirs(config.SGNN_gen_folder_path, exist_ok=True)
+    
+    if not os.path.exists(config.SGNN_csv_save_folder):
+        os.makedirs(config.SGNN_csv_save_folder, exist_ok=True)
+    
+    # Run the pipeline
     combined_df = run_sgnn(config)
     print("\033[1m\033[33m run_sgnn: DONE\033[0m")
+    
+    # Get the SDF search path to ensure consistent usage
+    sdf_path = get_sdf_search_path(config)
+    print(f"Using SDF path for data generation: {sdf_path}")
+    
     data_1H, csv_1H_path = run_1H_generation(config)
     print("\033[1m\033[33m run_1H_generation: DONE\033[0m")
+    print(f"1H CSV saved to: {csv_1H_path}")
+    
     data_13C, csv_13C_path = run_13C_generation(config)
     print("\033[1m\033[33m run_13C_generation: DONE\033[0m")
+    print(f"13C CSV saved to: {csv_13C_path}")
+    
     data_COSY, csv_COSY_path = run_COSY_generation(config)
     print("\033[1m\033[33m run_COSY_generation: DONE\033[0m")
+    print(f"COSY CSV saved to: {csv_COSY_path}")
+    
     data_HSQC, csv_HSQC_path = run_HSQC_generation(config)
     print("\033[1m\033[33m run_HSQC_generation: DONE\033[0m")
+    print(f"HSQC CSV saved to: {csv_HSQC_path}")
+    
     return combined_df, data_1H, data_13C, data_COSY, data_HSQC, csv_1H_path, csv_13C_path, csv_COSY_path, csv_HSQC_path
 
 
