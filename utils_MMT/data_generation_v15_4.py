@@ -27,7 +27,7 @@ from rdkit.Chem.EnumerateStereoisomers import GetStereoisomerCount, EnumerateSte
 # Local application/library specific imports
 from utils_MMT.sgnn_code_pl_v15_4 import *
 import utils_MMT.dataloaders_pl_v15_4 as dl
-import utils_MMT.clip_functions_v15_4 as cl
+# import utils_MMT.clip_functions_v15_4 as cl
 import utils_MMT.nmr_calculation_from_dft_v15_4 as ncfd
 
 
