@@ -771,6 +771,7 @@ def save_results_sdf_file(mol, save_folder, ID, final_list):
     
     # Add the NMR shift data to the SDF file
     with open(output_sdf, "a", encoding='utf-8', errors='ignore') as output:
+        output.write("\n")
         output.write(f">  <averaged_NMR_shifts>  ({1}) \n")
         shifts_string = get_shift_string(final_list)
         output.write(shifts_string)
