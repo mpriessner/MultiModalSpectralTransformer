@@ -1,6 +1,7 @@
 # Ignore models directory containing large model files
 /models/
 /data/
+/experiment/
 /dump/
 
 # Python bytecode
