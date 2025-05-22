@@ -454,7 +454,7 @@ def load_model(target, save_path):
     project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     models_base_path = os.path.join(project_root, 'models', 'sgnn', 'model')
     
-    print(f"Looking for models in: {models_base_path}")
+    # print(f"Looking for models in: {models_base_path}")
 
     # Define model paths based on the target
     if target == "1H":
@@ -487,7 +487,7 @@ def load_model(target, save_path):
         if not found:
             raise FileNotFoundError(f"Model file not found: {model_path}. Please make sure the model files are in the correct location.")
     
-    print(f"Loading model from: {model_path}")
+    # print(f"Loading model from: {model_path}")
     net.load_state_dict(torch.load(model_path))
     return net
 
