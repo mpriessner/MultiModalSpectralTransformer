@@ -71,7 +71,23 @@ def run_sgnn(config):
 
     batch_size = 128
     path_csv = config.SGNN_csv_gen_smi
-    ML_save_folder = config.SGNN_gen_folder_path
+    
+    # Create a subfolder with the random number for SDF files
+    if not hasattr(config, 'ran_num'):
+        config.ran_num = random.randint(1, 10000)
+    
+    # Create the main folder if it doesn't exist
+    if not os.path.exists(config.SGNN_gen_folder_path):
+        os.makedirs(config.SGNN_gen_folder_path, exist_ok=True)
+    
+    # Create a subfolder for SDF files
+    sdf_subfolder = os.path.join(config.SGNN_gen_folder_path, f"sdf_{config.ran_num}")
+    if not os.path.exists(sdf_subfolder):
+        os.makedirs(sdf_subfolder, exist_ok=True)
+    
+    # Use the subfolder for SDF files
+    ML_save_folder = sdf_subfolder
+    
     data_df = pd.read_csv(path_csv)
     #data_df = data_df.iloc[38449:]
     ### Remove every molecule that does not have any hydrogens
@@ -81,14 +97,6 @@ def run_sgnn(config):
 
     data_df['Molecular_Weight'] = data_df['SMILES'].apply(calculate_mw)
     data_df_final = data_df[data_df['Molecular_Weight'] <= config.SGNN_size_filter]
-
-    #data_df['SMILES'] = data_df['smiles']
-    #data_df['sample-id'] = data_df['zinc_id']
-    #data_df = data_df.iloc[:]#
-
-
-    if not os.path.exists(ML_save_folder):
-        os.mkdir(ML_save_folder)
 
     batch_data_1, failed_ids_1 = main_execute(data_df_final, sgnn_means_stds, ML_save_folder, batch_size)
 
@@ -687,9 +695,18 @@ def create_shift_intensity_label_data(shifts, coupling_patterns, atoms_done, spe
 
 
 def run_1H_generation(config):
+    # Look for SDF files in the subfolder
     folder_path = config.SGNN_gen_folder_path
-    nmr_files = glob.glob(folder_path+"/*")
-    nmr_files = [file for file in nmr_files if "NMR_" in file.split("/")[-1] ]
+    sdf_subfolder = os.path.join(folder_path, f"sdf_{config.ran_num}")
+    
+    # Use the subfolder if it exists, otherwise use the main folder
+    if os.path.exists(sdf_subfolder):
+        search_path = sdf_subfolder
+    else:
+        search_path = folder_path
+    
+    nmr_files = glob.glob(os.path.join(search_path, "*"))
+    nmr_files = [file for file in nmr_files if "NMR_" in file.split("/")[-1]]
     nmr_files = [file for file in nmr_files if not ".mol" in file]
     nmr_files = sorted(nmr_files, reverse=False)
 

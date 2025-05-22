@@ -757,24 +757,25 @@ def get_shift_string(assigned_shifts):
 
 
 def save_results_sdf_file(mol, save_folder, ID, final_list):
-    """ This function saves the final shift predictions into a SDF files with the lowest energy conformer"""
-
-    sdf_path = mol2SDF(mol, save_folder, ID)
-
-    name = "NMR_" + str(ID)+".sdf"
-    output_sdf = os.path.join(save_folder,name)
-    with open(output_sdf, "w",  encoding='utf-8', errors='ignore') as output:
-        with open(sdf_path) as g:
-            for i in g:
-                output.write(i)
-                if i == 'M  END\n':
-                    output.write("\n")
-                    output.write(f">  <averaged_NMR_shifts>  ({1}) \n")
-                    shifts_string = get_shift_string(final_list)
-                    output.write(shifts_string)
-                    output.write("\n")
-    g.close()
-    output.close()
+    """ This function saves the final shift predictions into a SDF file with the lowest energy conformer
+    without creating an intermediate SDF file"""
+    
+    # Create the NMR SDF file directly
+    name = "NMR_" + str(ID) + ".sdf"
+    output_sdf = os.path.join(save_folder, name)
+    
+    # Write the molecule directly to the output file
+    writer = Chem.SDWriter(output_sdf)
+    writer.write(mol)
+    writer.close()
+    
+    # Add the NMR shift data to the SDF file
+    with open(output_sdf, "a", encoding='utf-8', errors='ignore') as output:
+        output.write(f">  <averaged_NMR_shifts>  ({1}) \n")
+        shifts_string = get_shift_string(final_list)
+        output.write(shifts_string)
+        output.write("\n\n")
+    
     return output_sdf
 
 
