@@ -12,9 +12,15 @@ echo "Current branch: $CURRENT_BRANCH"
 TARGET_BRANCH=${1:-$CURRENT_BRANCH}
 echo "Target branch for pulling: $TARGET_BRANCH"
 
-# Stash any local changes
-echo "Stashing local changes..."
-git stash save "Automatic stash before pulling latest changes"
+# Check if there are any local changes before stashing
+STASHED=false
+if ! git diff-index --quiet HEAD --; then
+    echo "Stashing local changes..."
+    git stash push -m "Automatic stash before pulling latest changes"
+    STASHED=true
+else
+    echo "No local changes to stash."
+fi
 
 # Fetch all branches from remote
 echo "Fetching updates from remote..."
@@ -24,17 +30,25 @@ git fetch --all
 echo "Pulling latest changes from origin/$TARGET_BRANCH..."
 git pull origin $TARGET_BRANCH
 
-# Check if there are stashed changes
-STASH_COUNT=$(git stash list | wc -l)
-if [ $STASH_COUNT -gt 0 ]; then
-  echo ""
-  echo "You have stashed changes. You can apply them with:"
-  echo "  git stash apply"
-  echo "Or you can view the stash list with:"
-  echo "  git stash list"
-  echo ""
-  echo "To discard stashed changes, use:"
-  echo "  git stash drop"
+# Only show stash instructions if we actually stashed something
+if [ "$STASHED" = true ]; then
+    echo ""
+    echo "You have stashed changes. You can apply them with:"
+    echo "  git stash apply"
+    echo "Or you can view the stash list with:"
+    echo "  git stash list"
+    echo ""
+    echo "To discard stashed changes, use:"
+    echo "  git stash drop"
+else
+    # Check if there are any existing stashes from previous runs
+    STASH_COUNT=$(git stash list | wc -l)
+    if [ $STASH_COUNT -gt 0 ]; then
+        echo ""
+        echo "Note: You have $STASH_COUNT existing stashed change(s) from previous operations."
+        echo "View them with: git stash list"
+        echo "Apply the most recent with: git stash apply"
+    fi
 fi
 
 echo "Done! Latest changes have been pulled from origin/$TARGET_BRANCH."

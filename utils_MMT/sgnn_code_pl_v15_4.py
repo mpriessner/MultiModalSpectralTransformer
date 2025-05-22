@@ -30,6 +30,15 @@ from rdkit import Chem, RDConfig, rdBase
 from rdkit.Chem import AllChem, ChemicalFeatures
 import argparse
 import ast
+# Update import path to use local repository
+import sys
+from pathlib import Path
+
+# Add the project root to the path to ensure imports work correctly
+project_root = Path(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+if str(project_root) not in sys.path:
+    sys.path.insert(0, str(project_root))
+
 from nmr_sgnn_norm.dataset import GraphDataset
 
 from dgllife.utils import RandomSplitter
