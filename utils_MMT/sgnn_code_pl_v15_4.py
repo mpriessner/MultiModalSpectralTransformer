@@ -876,12 +876,13 @@ def main_execute(data_df, means_stds, ML_save_folder, batch_size):
             if os.path.isfile(save_path_C):
                 os.remove(save_path_C)
 
-        except:
-            print("except")
-
-            print(len(IDs))
-            #import IPython; IPython.embed();
-            failed_ids= failed_ids + IDs           
+        except Exception as e:
+            print(f"Error processing batch: {str(e)}")
+            import traceback
+            traceback.print_exc()
+            print(f"Failed IDs: {IDs}")
+            print(f"Number of failed IDs: {len(IDs)}")
+            failed_ids.extend(IDs)  # Add the failed IDs to the list           
     # Convert the results to a DataFrame
     batch_data = pd.DataFrame(result_list, columns=['sample-id', 'sdf_path', 'SMILES'])
     #print("main end")
