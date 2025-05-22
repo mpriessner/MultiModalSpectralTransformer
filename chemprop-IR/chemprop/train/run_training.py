@@ -22,7 +22,7 @@ from chemprop.models import build_model
 from chemprop.nn_utils import param_count
 from chemprop.utils import build_optimizer, build_lr_scheduler, get_loss_func, get_metric_func, load_checkpoint,\
     makedirs, save_checkpoint, load_frzn_mpn, load_spectral_mask
-
+from chemprop.paths import get_save_dir
 
 def run_training(args: Namespace, logger: Logger = None) -> List[float]:
     """

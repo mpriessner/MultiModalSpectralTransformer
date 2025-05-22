@@ -1,5 +1,7 @@
 # Ignore models directory containing large model files
 /models/
+/data/
+/dump/
 
 # Python bytecode
 __pycache__/
@@ -35,9 +37,3 @@ Thumbs.db
 .vscode/
 *.swp
 *.swo
-
-# Large log files
-*.log
-
-# Specific large files in deep-molecular-optimization
-deep-molecular-optimization/experiments/evaluation_transformer/*/evaluation_*/generate.log
