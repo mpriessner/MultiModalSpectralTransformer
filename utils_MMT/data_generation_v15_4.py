@@ -1213,18 +1213,119 @@ def run_HSQC_generation(config):
 ##############################################################################
 
 
-def main_run_data_generation(config):
+def cleanup_files(config):
+    """Move NMR SDF files to a dedicated subfolder and clean up other files"""
+    # Ensure we have a random number
+    if not hasattr(config, 'ran_num'):
+        config.ran_num = random.randint(1, 100000)
     
+    # Create a subfolder for SDF files
+    sdf_subfolder = os.path.join(config.SGNN_gen_folder_path, f"sdf_{config.ran_num}")
+    if not os.path.exists(sdf_subfolder):
+        os.makedirs(sdf_subfolder, exist_ok=True)
+    
+    # Find all files in the main folder
+    main_folder = config.SGNN_gen_folder_path
+    all_files = os.listdir(main_folder)
+    
+    # Separate files by type
+    nmr_sdf_files = []
+    non_nmr_sdf_files = []
+    mol_files = []
+    
+    for f in all_files:
+        if not os.path.isfile(os.path.join(main_folder, f)):
+            continue
+            
+        if f.endswith('.sdf'):
+            if f.startswith('NMR_'):
+                nmr_sdf_files.append(f)
+            else:
+                non_nmr_sdf_files.append(f)
+        elif f.endswith('.mol'):
+            mol_files.append(f)
+    
+    print(f"Found {len(nmr_sdf_files)} NMR SDF files to keep")
+    print(f"Found {len(non_nmr_sdf_files)} non-NMR SDF files to delete")
+    print(f"Found {len(mol_files)} MOL files to delete")
+    
+    # Move NMR SDF files to the subfolder
+    for sdf_file in nmr_sdf_files:
+        src_path = os.path.join(main_folder, sdf_file)
+        dst_path = os.path.join(sdf_subfolder, sdf_file)
+        
+        try:
+            shutil.copy2(src_path, dst_path)  # Copy with metadata
+            os.remove(src_path)  # Remove the original
+            print(f"Moved {sdf_file} to {sdf_subfolder}")
+        except Exception as e:
+            print(f"Error moving {sdf_file}: {str(e)}")
+    
+    # Delete non-NMR SDF files
+    for sdf_file in non_nmr_sdf_files:
+        try:
+            os.remove(os.path.join(main_folder, sdf_file))
+            print(f"Deleted non-NMR SDF file: {sdf_file}")
+        except Exception as e:
+            print(f"Error deleting {sdf_file}: {str(e)}")
+    
+    # Delete MOL files
+    for mol_file in mol_files:
+        try:
+            os.remove(os.path.join(main_folder, mol_file))
+            print(f"Deleted MOL file: {mol_file}")
+        except Exception as e:
+            print(f"Error deleting {mol_file}: {str(e)}")
+    
+    return sdf_subfolder
+
+def main_run_data_generation(config):
+    # Ensure necessary directories exist
+    if not os.path.exists(config.SGNN_gen_folder_path):
+        os.makedirs(config.SGNN_gen_folder_path, exist_ok=True)
+    
+    if not os.path.exists(config.SGNN_csv_save_folder):
+        os.makedirs(config.SGNN_csv_save_folder, exist_ok=True)
+    
+    # Ensure we have a random number
+    if not hasattr(config, 'ran_num'):
+        config.ran_num = random.randint(1, 100000)
+        print(f"Setting random ran_num: {config.ran_num}")
+    else:
+        print(f"Using existing ran_num: {config.ran_num}")
+    
+    # Run the pipeline
     combined_df = run_sgnn(config)
     print("\033[1m\033[33m run_sgnn: DONE\033[0m")
+    
     data_1H, csv_1H_path = run_1H_generation(config)
     print("\033[1m\033[33m run_1H_generation: DONE\033[0m")
+    print(f"1H CSV saved to: {csv_1H_path}")
+    
     data_13C, csv_13C_path = run_13C_generation(config)
     print("\033[1m\033[33m run_13C_generation: DONE\033[0m")
+    print(f"13C CSV saved to: {csv_13C_path}")
+    
     data_COSY, csv_COSY_path = run_COSY_generation(config)
     print("\033[1m\033[33m run_COSY_generation: DONE\033[0m")
+    print(f"COSY CSV saved to: {csv_COSY_path}")
+    
     data_HSQC, csv_HSQC_path = run_HSQC_generation(config)
     print("\033[1m\033[33m run_HSQC_generation: DONE\033[0m")
+    print(f"HSQC CSV saved to: {csv_HSQC_path}")
+    
+    # Print data shapes for verification
+    print(f"1H data shape: {data_1H.shape}")
+    print(f"13C data shape: {data_13C.shape}")
+    print(f"COSY data shape: {data_COSY.shape}")
+    print(f"HSQC data shape: {data_HSQC.shape}")
+    
+    # Clean up files at the very end
+    print("\033[1m\033[33m Starting final cleanup...\033[0m")
+    sdf_subfolder = cleanup_files(config)
+    print(f"Organized SDF files into: {sdf_subfolder}")
+    print("\033[1m\033[33m Cleanup complete\033[0m")
+    
     return combined_df, data_1H, data_13C, data_COSY, data_HSQC, csv_1H_path, csv_13C_path, csv_COSY_path, csv_HSQC_path
 
 
