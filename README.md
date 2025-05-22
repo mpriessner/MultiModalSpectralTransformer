@@ -16,11 +16,12 @@ Publication:
 
 This project requires significant computational resources:
 
-- **GPU**: A high-performance GPU is necessary. We recommend using an NVIDIA V100 or K80 GPU.
-- **Memory**: Sufficient RAM to handle large datasets and model training.
-- **Storage**: Adequate storage space for datasets, model checkpoints, and results.
+- **GPU**: A high-performance GPU is necessary. We recommend using an NVIDIA GPU with CUDA 11.1 support (e.g., NVIDIA V100 or K80).
+- **Memory**: At least 16GB RAM to handle datasets and model training.
+- **Storage**: At least 50GB storage space for datasets, model checkpoints, and results.
+- **Python**: Python 3.7.x is required (tested with Python 3.7.12).
 
-Please ensure your system meets these requirements before proceeding with the installation and usage of MultiModalTransformer.
+Please ensure your system meets these requirements before proceeding with the installation and usage of MultiModalSpectralTransformer.
 
 
 ## Software Usage Instructions
@@ -34,22 +35,50 @@ The ESI contains:
 - Guide for interpreting model outputs and explanations
 - Troubleshooting tips and best practices
 
-## Folder Structure
+## Data and Model Setup
 
-After cloning the repository and adding the extra models, your folder structure should look like this:
+### Required Downloads from Zenodo
+
+Before using this software, you need to download the necessary data and pre-trained models from our Zenodo repository: [https://doi.org/10.5281/zenodo.14712886](https://doi.org/10.5281/zenodo.14712886)
+
+You'll need to download the following files:
+
+1. **Models (Required)**: Download `models.zip` and extract its contents into the `models` directory of this repository
+2. **Data (Required)**: Download `data.zip` and extract its contents into the `data` directory of this repository
+3. **Experiment Data (Required for Reproducibility)**: Download experiment data and place it in the `experiment` directory to reproduce the figures and results from the paper
+4. **Extra Assets (Optional)**: Additional resources for extended functionality
+
+### Folder Structure
+
+After cloning the repository and adding the required data and models, your folder structure should look like this:
+
 ```
-MultiModalTransformer
+MultiModalSpectralTransformer
 │
-├── 📁 chemprop-IR
-├── 📁 deep-molecular-optimization
-├── 📁 dump
-├── 📁 MMT_website
-├── 📁 models
-├── 📁 nmr_sgnn_norm
-└── 📁 utils_MMT
+├── 📁 chemprop-IR            # IR spectrum prediction model
+├── 📁 data                   # Downloaded datasets and generated data
+│   ├── 📁 datasets           # Raw and processed datasets
+│   ├── 📁 generated          # Generated spectral data
+│   └── 📁 predictions        # Model predictions
+├── 📁 deep-molecular-optimization  # Molecule optimization code
+├── 📁 dump                   # Temporary files and outputs
+├── 📁 experiment             # Experimental results and data for reproducing figures
+│   ├── 📁 figures            # Generated figures from the paper
+│   └── 📁 results            # Raw results from experiments
+├── 📁 models                 # Downloaded pre-trained models
+│   ├── 📁 chemprop-ir        # IR prediction models
+│   ├── 📁 mmst               # Multi-modal spectral transformer models
+│   ├── 📁 mol2mol            # Molecule translation models
+│   └── 📁 sgnn               # NMR prediction models
+├── 📁 MMT_website            # Web interface files
+├── 📁 nmr_sgnn_norm          # NMR spectrum prediction model
+├── 📁 scripts                # Utility scripts
+├── 📁 utils_MMT              # Core utilities and functions
+├── 📁 utils_MMST             # Additional utilities
+└── [Various notebooks]       # Jupyter notebooks for different tasks
 ```
 
-Ensure that after extracting the extra libraries, your folder structure matches this layout.
+Ensure all downloaded files are placed in their respective directories as shown above.
 
 
 ## Notebooks
@@ -82,54 +111,112 @@ Please refer to these notebooks for detailed procedures on data generation and e
 ### Prerequisites
 
 - **Conda**: Ensure you have Conda installed on your system.
+- **CUDA**: CUDA 11.1 is required for the GPU acceleration (required for PyTorch and DGL).
 
 ### Setup
 
-1. **Create Conda Environment**:
-   ```
-   conda create -y -c conda-forge -n NMR_Structure_Elucidator python=3.7.6
-   ```
-
-2. **Activate the Environment**:
-   ```
-   conda activate NMR_Structure_Elucidator
+1. **Clone the Repository**:
+   ```bash
+   git clone https://github.com/your-username/MultiModalSpectralTransformer.git
+   cd MultiModalSpectralTransformer
    ```
 
-3. **Clone the Repository**:
-   ```
-   git clone <repository-url>
-   cd <path-of-the-cloned-github-code-folder>/MultiModalTransformer
-   ```
-
-4. **Download and Extract Extra Libraries**:
-   - Download the `extra_libraries.zip` file from the following Zenodo link:
-     [Zenodo Link for extra_libraries.zip]
-
-   - Extract the contents of the zip file into the `/MultiModalTransformer` folder of your cloned repository:
-     ```
-     unzip path/to/extra_libraries.zip -d /path/to/MultiModalTransformer/
-     ```
+2. **Download Required Data and Models**:
+   Download the necessary files from our Zenodo repository: [https://doi.org/10.5281/zenodo.14712886](https://doi.org/10.5281/zenodo.14712886)
    
-   Make sure all extracted files and folders are directly under the `/MultiModalTransformer` directory.
-
-5. **Install Dependencies**:
+   ```bash
+   # Create directories if they don't exist
+   mkdir -p data models experiment
+   
+   # Download and extract model files (replace with actual download links from Zenodo)
+   wget -O models.zip <zenodo-models-download-url>
+   unzip models.zip -d models/
+   
+   # Download and extract data files
+   wget -O data.zip <zenodo-data-download-url>
+   unzip data.zip -d data/
+   
+   # Download and extract experiment files for reproducibility
+   wget -O experiment.zip <zenodo-experiment-download-url>
+   unzip experiment.zip -d experiment/
    ```
+
+3. **Environment Setup**:
+   We provide an installation script that sets up all the necessary dependencies:
+   
+   ```bash
+   # Create a new conda environment
+   conda create -y -c conda-forge -n NMR_Structure_Elucidator python=3.7.12
+   
+   # Activate the environment
+   conda activate NMR_Structure_Elucidator
+   
+   # Run the installation script
    bash installs.sh
    ```
+   
+   The `installs.sh` script will install all required packages including PyTorch, DGL, RDKit, and other dependencies needed for the project.
+
+4. **Verify Installation**:
+   Test that the environment is properly set up by running one of the simpler notebooks:
+   
+   ```bash
+   jupyter lab
+   ```
+   
+   Then open one of the notebooks to verify functionality.
 
 ## Usage
 
-1. **Launch the Web Application**:
+### Running the Web Interface
+
+1. **Start the Web Application**:
    ```bash
+   cd MMT_website
    python app.py
    ```
 
 2. **Access the Application**:
    Open your web browser and navigate to `http://127.0.0.1:5000/`.
 
+### Using the Jupyter Notebooks
+
+We provide several Jupyter notebooks for different aspects of the workflow:
+
+1. **Run Jupyter Lab**:
+   ```bash
+   jupyter lab
+   ```
+
+2. **Select a Notebook**:
+   - `1.8_Experiment_Notebook_.ipynb` - For running experiments and evaluating results
+   - `2.0_Automatic_NMR_Data_Generation.ipynb` - For generating synthetic NMR data
+   - `3.0_Chemprop_IR_Data_Generation_.ipynb` - For generating IR spectral data
+   - `4.0_Explainability_plot.ipynb` - For visualizing model interpretations
+
+### Common Issues
+
+1. **CUDA/GPU Issues**:
+   - Error: `CUDA error: no kernel image is available for execution on the device`
+   - Solution: Ensure your CUDA version matches the requirements (CUDA 11.1) and that your GPU drivers are up to date.
+
+2. **Missing Data Files**:
+   - Error: `FileNotFoundError: [Errno 2] No such file or directory: 'data/...'`
+   - Solution: Make sure you've downloaded and extracted all required data files from Zenodo to the correct locations.
+
+3. **Python Environment Issues**:
+   - Error: `ModuleNotFoundError: No module named 'xxx'`
+   - Solution: Double-check that all dependencies are installed in your conda environment. Run `pip list` to verify.
+
+4. **Model Loading Errors**:
+   - Error: `torch.nn.modules.module.ModuleAttributeError: 'xxx' object has no attribute 'xxx'`
+   - Solution: Ensure you're using the correct model files from Zenodo and that they match the expected format.
+
+If you encounter persistent issues, please check the GitHub repository for updated troubleshooting guidance or open an issue with detailed information about your problem.
+
 ## Contributing
 
-We welcome contributions to improve the MultiModalTransformer. Please fork the repository and submit a pull request.
+We welcome contributions to improve the MultiModalSpectralTransformer. Please fork the repository and submit a pull request.
 
 ## License
 

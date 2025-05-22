@@ -4,7 +4,7 @@
 # conda create -y -c conda-forge -n NMR_Structure_Elucidator python=3.7.6
 
 # conda  activate NMR_Structure_Elucidator
-pip install jupyter-client==7.0.6
+
 pip install jupyter_core==4.11.1
 pip install jupyter-server==1.23.4
 pip install jupyterlab==3.5.0
@@ -24,27 +24,45 @@ pip install six==1.16.0
 pip install setuptools==59.5.0
 pip install dgl-cu111==0.6.1
 
-pip install svgwrite
 pip install wandb==0.15.4
-pip install tqdm
 
 pip install Flask==2.2.5
 pip install Flask-SocketIO==5.3.6
 
+# Data processing and analysis packages
 pip install pandas==1.3.5
+pip install numpy==1.21.6
+pip install scipy==1.7.3
+
+# Visualization packages
 pip install matplotlib==3.5.3
 pip install plotly==5.18.0
+pip install seaborn==0.12.2
 
+# Machine learning and dimensionality reduction
 pip install umap-learn==0.5.4
+pip install scikit-learn==0.24.2
+
+# Chemistry-specific packages
 pip install rdkit==2023.3.2
 pip install ipython==7.15.0
-pip install CairoSVG==2.7.0
 
 pip install MolVS==0.1.1
 pip install dgllife==0.3.0
+
+# Deep learning and NLP packages
 pip install transformers==4.26.1
+pip install sentence-transformers==2.2.2
+
+# Visualization and SVG handling
+pip install CairoSVG==2.7.0
+
+# Jupyter and development tools
 pip install ipykernel==6.15.0 ipython==7.33.0
 pip install tensorboardX==2.6.2.2
+
+# Utility packages
+pip install tqdm==4.66.5
 
 
 echo "Installation process completed."
