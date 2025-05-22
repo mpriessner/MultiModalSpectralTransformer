@@ -1257,7 +1257,7 @@ def cleanup_files(config):
         try:
             shutil.copy2(src_path, dst_path)  # Copy with metadata
             os.remove(src_path)  # Remove the original
-            print(f"Moved {sdf_file} to {sdf_subfolder}")
+            # print(f"Moved {sdf_file} to {sdf_subfolder}")
         except Exception as e:
             print(f"Error moving {sdf_file}: {str(e)}")
     
@@ -1265,7 +1265,7 @@ def cleanup_files(config):
     for sdf_file in non_nmr_sdf_files:
         try:
             os.remove(os.path.join(main_folder, sdf_file))
-            print(f"Deleted non-NMR SDF file: {sdf_file}")
+            # print(f"Deleted non-NMR SDF file: {sdf_file}")
         except Exception as e:
             print(f"Error deleting {sdf_file}: {str(e)}")
     
@@ -1273,7 +1273,7 @@ def cleanup_files(config):
     for mol_file in mol_files:
         try:
             os.remove(os.path.join(main_folder, mol_file))
-            print(f"Deleted MOL file: {mol_file}")
+            # print(f"Deleted MOL file: {mol_file}")
         except Exception as e:
             print(f"Error deleting {mol_file}: {str(e)}")
     
