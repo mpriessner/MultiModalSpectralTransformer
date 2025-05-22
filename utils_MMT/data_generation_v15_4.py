@@ -203,20 +203,52 @@ def generate_nmr_coupling_pattern(n_neighbors, J):
 
 
 def load_mol_and_assign_shifts(file_path):
-    data = PandasTools.LoadSDF(file_path)
-    mol = data["ROMol"].item()
-    mol = AddHs(mol, addCoords=True)
-
-    str_shifts = data["averaged_NMR_shifts"].item()
-    shifts  = [float(i) for i in str_shifts.split()]
-
-    atoms = list(mol.GetAtoms())
-    i = 0
-    for idx, atom in enumerate(atoms):
-        atom.SetProp("_Shift", str(shifts[idx]))
-    mol = AddHs(mol, addCoords=False)
-
-    return mol
+    try:
+        # Try using PandasTools first
+        try:
+            data = PandasTools.LoadSDF(file_path)
+            mol = data["ROMol"].item()
+            str_shifts = data["averaged_NMR_shifts"].item()
+        except Exception as e:
+            print(f"Error using PandasTools to load {file_path}: {str(e)}")
+            # Fall back to direct SDMolSupplier
+            supplier = SDMolSupplier(file_path)
+            if supplier is None or len(supplier) == 0:
+                print(f"Error: No molecules found in {file_path}")
+                return None
+            mol = supplier[0]
+            if mol is None:
+                print(f"Error: Could not load molecule from {file_path}")
+                return None
+            if not mol.HasProp('averaged_NMR_shifts'):
+                print(f"Error: No 'averaged_NMR_shifts' property in molecule from {file_path}")
+                return None
+            str_shifts = mol.GetProp('averaged_NMR_shifts')
+        
+        # Add hydrogens to the molecule
+        mol = AddHs(mol, addCoords=True)
+        
+        # Parse the shifts
+        shifts = [float(i) for i in str_shifts.split()]
+        
+        # Assign shifts to atoms
+        atoms = list(mol.GetAtoms())
+        if len(shifts) < len(atoms):
+            print(f"Warning: Not enough shifts ({len(shifts)}) for all atoms ({len(atoms)}) in {file_path}")
+        
+        for idx, atom in enumerate(atoms):
+            if idx < len(shifts):
+                atom.SetProp("_Shift", str(shifts[idx]))
+            else:
+                atom.SetProp("_Shift", "0.0")
+        
+        mol = AddHs(mol, addCoords=False)
+        return mol
+    except Exception as e:
+        print(f"Failed to load molecule from {file_path}: {str(e)}")
+        import traceback
+        traceback.print_exc()
+        return None
 
 def add_shifts_to_data(nmr_data, assigned_shifts):
     ### Calculate the average shift to the nmr_data dictionary 
@@ -759,28 +791,41 @@ def run_1H_generation(config):
 
     for file_path in nmr_files[:]:
         try:
+            # Load the molecule and assign shifts
             mol = load_mol_and_assign_shifts(file_path)
-            #sample_id = file_path[-19:-4]
-
+            if mol is None:
+                print(f"Skipping {file_path} due to loading error")
+                continue
+                
             # Extract the filename from the path
             file_name = os.path.basename(file_path)
 
             # Remove the file extension to get the desired part
             sample_id = os.path.splitext(file_name)[0].split('NMR_')[-1]
+            print(f"Processing sample ID: {sample_id}")
 
-            #sample_id = file_path[-17:-4] ### For zinc dataset
+            # Analyze the molecule
             nmr_data, assigned_shifts, mol = analyze_molecule(mol)
+            if not nmr_data or not assigned_shifts:
+                print(f"No NMR data found for {sample_id}, skipping")
+                continue
+                
             nmr_data = add_shifts_to_data(nmr_data, assigned_shifts)
             coupling_patterns, atoms_done, shifts, hydrogen_num = calculate_couplings_constants(nmr_data)
+            
             if plot_NMR:
                 create_plot_NMR(shifts, coupling_patterns, gamma, spectrometer_frequency)
+                
             shift_intensity_label_data, shift_intensity_data = create_shift_intensity_label_data(shifts, coupling_patterns, atoms_done, spectrometer_frequency)
+            
             if plot_NMR_interactiv:
                 create_plot_NMR_interactiv(shift_intensity_label_data)
+                
             if show_labeled_structure:
-                svg_output = create_labeled_structure(mol,assigned_shifts)
+                svg_output = create_labeled_structure(mol, assigned_shifts)
                 display(svg_output)
-            if len(shift_intensity_data)!=0:
+                
+            if len(shift_intensity_data) > 0:
                 mol = Chem.RemoveHs(mol)
                 smi = MolToSmiles(mol)            
                 smiles_list.append(smi)
@@ -788,23 +833,32 @@ def run_1H_generation(config):
                 data_shifts_ints = sorted(list(set(shift_intensity_data)), reverse=False)
                 data_list.append(data_shifts_ints)
                 sample_id_list.append(sample_id)
+                print(f"Successfully processed {sample_id}, added to dataset")
             else:
-                print(sample_id)
-        except:
-            #import IPython; IPython.embed();
-            print(file_path)
+                print(f"No shift intensity data for {sample_id}, skipping")
+        except Exception as e:
+            print(f"Error processing {file_path}: {str(e)}")
+            import traceback
+            traceback.print_exc()
 
 
     # Create a DataFrame with the lists as columns
-    data = pd.DataFrame({
-        'SMILES': smiles_list,
-        'shifts': data_list,
-        'sample-id': sample_id_list,
-    })
-
-    data.reset_index(drop=True, inplace=True)
+    print(f"Creating 1H DataFrame with {len(smiles_list)} entries")
+    if len(smiles_list) > 0:
+        data = pd.DataFrame({
+            'SMILES': smiles_list,
+            'shifts': data_list,
+            'sample-id': sample_id_list,
+        })
+        data.reset_index(drop=True, inplace=True)
+    else:
+        print("Warning: No data was successfully processed for 1H generation")
+        data = pd.DataFrame(columns=['SMILES', 'shifts', 'sample-id'])
+    
+    # Save to CSV
     csv_1H_path = os.path.join(config.SGNN_csv_save_folder, f"data_1H_{config.ran_num}.csv")
     data.to_csv(csv_1H_path, index=False)
+    print(f"Saved 1H CSV with {len(data)} rows to {csv_1H_path}")
     return data, csv_1H_path
 
 
@@ -891,18 +945,43 @@ def run_13C_generation(config):
 
     for file_path in nmr_files[:]:
         try:
-            #mol = load_mol_and_assign_shifts(file_path)
-            mol = SDMolSupplier(file_path)[0]
-            isomers = tuple(EnumerateStereoisomers(mol))
-            stereo_smi = Chem.MolToSmiles(isomers[0],isomericSmiles=True)
-
-            averaged_nmr_shifts = mol.GetProp('averaged_NMR_shifts')
-            sample_shifts = list(map(float, averaged_nmr_shifts.split()))
-
+            # Try to load the molecule
+            try:
+                supplier = SDMolSupplier(file_path)
+                if supplier is None or len(supplier) == 0:
+                    print(f"Error: No molecules found in {file_path}")
+                    continue
+                mol = supplier[0]
+                if mol is None:
+                    print(f"Error: Could not load molecule from {file_path}")
+                    continue
+            except Exception as e:
+                print(f"Error loading molecule from {file_path}: {str(e)}")
+                continue
+                
+            # Get stereoisomers
+            try:
+                isomers = tuple(EnumerateStereoisomers(mol))
+                stereo_smi = Chem.MolToSmiles(isomers[0], isomericSmiles=True)
+            except Exception as e:
+                print(f"Error getting stereoisomers for {file_path}: {str(e)}")
+                stereo_smi = Chem.MolToSmiles(mol, isomericSmiles=True)
+            
+            # Get NMR shifts
+            try:
+                if not mol.HasProp('averaged_NMR_shifts'):
+                    print(f"Error: No 'averaged_NMR_shifts' property in molecule from {file_path}")
+                    continue
+                averaged_nmr_shifts = mol.GetProp('averaged_NMR_shifts')
+                sample_shifts = list(map(float, averaged_nmr_shifts.split()))
+            except Exception as e:
+                print(f"Error getting NMR shifts from {file_path}: {str(e)}")
+                continue
 
             # Extract the sample_id from the path
             file_name = os.path.basename(file_path)
             sample_id = os.path.splitext(file_name)[0].split('NMR_')[-1]
+            print(f"Processing 13C for sample ID: {sample_id}")
 
             # Remove symmetric C
             sym_dupl_lists = find_symmetric_positions(stereo_smi)
@@ -915,12 +994,21 @@ def run_13C_generation(config):
                 if atom.GetSymbol() != 'H':
                     non_hydrogen_count += 1
 
-            heavy_atoms_shifts = sym_corr_nmr_shifts[:non_hydrogen_count]
+            if len(sym_corr_nmr_shifts) < non_hydrogen_count:
+                print(f"Warning: Not enough shifts ({len(sym_corr_nmr_shifts)}) for all non-hydrogen atoms ({non_hydrogen_count}) in {file_path}")
+                heavy_atoms_shifts = sym_corr_nmr_shifts
+            else:
+                heavy_atoms_shifts = sym_corr_nmr_shifts[:non_hydrogen_count]
+                
             # Remove zeros
             C_atoms_shifts = [x for x in heavy_atoms_shifts if x != 0]
 
             # Remove symmetric peaks
             C_atoms_shifts = sorted(list(set(C_atoms_shifts)), reverse=False)
+            
+            if len(C_atoms_shifts) == 0:
+                print(f"No carbon shifts found for {sample_id}, skipping")
+                continue
 
             mol = Chem.RemoveHs(mol)
             smi = MolToSmiles(mol)     
@@ -928,19 +1016,30 @@ def run_13C_generation(config):
             smiles_list.append(smi)
             data_list.append(C_atoms_shifts)
             sample_id_list.append(sample_id)
-        except:
-            print(file_path)
+            print(f"Successfully processed 13C for {sample_id}, added to dataset")
+        except Exception as e:
+            print(f"Error processing 13C for {file_path}: {str(e)}")
+            import traceback
+            traceback.print_exc()
 
 
     # Create a DataFrame with the lists as columns
-    data = pd.DataFrame({
-        'SMILES': smiles_list,
-        'shifts': data_list,
-        'sample-id': sample_id_list,
-    })
-
+    print(f"Creating 13C DataFrame with {len(smiles_list)} entries")
+    if len(smiles_list) > 0:
+        data = pd.DataFrame({
+            'SMILES': smiles_list,
+            'shifts': data_list,
+            'sample-id': sample_id_list,
+        })
+        data.reset_index(drop=True, inplace=True)
+    else:
+        print("Warning: No data was successfully processed for 13C generation")
+        data = pd.DataFrame(columns=['SMILES', 'shifts', 'sample-id'])
+    
+    # Save to CSV
     csv_13C_path = os.path.join(config.SGNN_csv_save_folder, f"data_13C_{config.ran_num}.csv")
-    data.to_csv(csv_13C_path)
+    data.to_csv(csv_13C_path, index=False)
+    print(f"Saved 13C CSV with {len(data)} rows to {csv_13C_path}")
     return data, csv_13C_path
 
 
@@ -1172,39 +1271,76 @@ def run_COSY_generation(config):
 
     for file_path in nmr_files[:]:
         try:
-            mol = SDMolSupplier(file_path)[0]
-            isomers = tuple(EnumerateStereoisomers(mol))
-            stereo_smi = Chem.MolToSmiles(isomers[0],isomericSmiles=True)
-
+            # Try to load the molecule
+            try:
+                supplier = SDMolSupplier(file_path)
+                if supplier is None or len(supplier) == 0:
+                    print(f"Error: No molecules found in {file_path}")
+                    continue
+                mol = supplier[0]
+                if mol is None:
+                    print(f"Error: Could not load molecule from {file_path}")
+                    continue
+            except Exception as e:
+                print(f"Error loading molecule from {file_path}: {str(e)}")
+                continue
+                
+            # Get stereoisomers
+            try:
+                isomers = tuple(EnumerateStereoisomers(mol))
+                stereo_smi = Chem.MolToSmiles(isomers[0], isomericSmiles=True)
+            except Exception as e:
+                print(f"Error getting stereoisomers for {file_path}: {str(e)}")
+                stereo_smi = Chem.MolToSmiles(mol, isomericSmiles=True)
+            
             # Get NMR shifts
-            averaged_nmr_shifts = mol.GetProp('averaged_NMR_shifts')
-            sample_shifts = list(map(float, averaged_nmr_shifts.split()))
+            try:
+                if not mol.HasProp('averaged_NMR_shifts'):
+                    print(f"Error: No 'averaged_NMR_shifts' property in molecule from {file_path}")
+                    continue
+                averaged_nmr_shifts = mol.GetProp('averaged_NMR_shifts')
+                sample_shifts = list(map(float, averaged_nmr_shifts.split()))
+            except Exception as e:
+                print(f"Error getting NMR shifts from {file_path}: {str(e)}")
+                continue
 
             # Extract the sample_id from the path
             file_name = os.path.basename(file_path)
             sample_id = os.path.splitext(file_name)[0].split('NMR_')[-1]
+            print(f"Processing COSY for sample ID: {sample_id}")
 
             # Find chiral centers
-            chiral_centers = find_chiral_centers(mol)
+            try:
+                chiral_centers = find_chiral_centers(mol)
+                carbon_dict = find_carbons_with_relevant_neighbors(mol)
+                heavy_atom_dict = find_heavy_atoms_with_hydrogens(mol)
+            except Exception as e:
+                print(f"Error analyzing molecule structure for {sample_id}: {str(e)}")
+                continue
 
-            carbon_dict = find_carbons_with_relevant_neighbors(mol)
+            # Process shifts
+            try:
+                heavy_atom_hydrogen_shift_dict = extract_symmetric_hydrogen_shifts(sample_shifts, heavy_atom_dict)
+                sym_dupl_lists = find_symmetric_positions(stereo_smi)
+                # Remove symmetric positions that don't have hydrogens
+                sym_dupl_lists = [positions for positions in sym_dupl_lists if all(has_hydrogens(mol, idx) for idx in positions)]
+                averaged_shifts = average_shifts(heavy_atom_hydrogen_shift_dict, sym_dupl_lists)
+                updated_heavy_atom_hydrogen_shift_dict = update_shifts_with_averaged(heavy_atom_hydrogen_shift_dict, averaged_shifts)
+            except Exception as e:
+                print(f"Error processing shifts for {sample_id}: {str(e)}")
+                continue
 
-            heavy_atom_dict = find_heavy_atoms_with_hydrogens(mol)
-
-            heavy_atom_hydrogen_shift_dict = extract_symmetric_hydrogen_shifts(sample_shifts, heavy_atom_dict)
-
-            sym_dupl_lists = find_symmetric_positions(stereo_smi)
-
-            # Remove symmetric positions that don't have hydrogens
-            sym_dupl_lists = [positions for positions in sym_dupl_lists if all(has_hydrogens(mol, idx) for idx in positions)]
-
-            averaged_shifts = average_shifts(heavy_atom_hydrogen_shift_dict, sym_dupl_lists)
-
-            updated_heavy_atom_hydrogen_shift_dict = update_shifts_with_averaged(heavy_atom_hydrogen_shift_dict, averaged_shifts)
-
-            COSY_shifts = plot_and_save_cosy_spectrum_with_zoom_no_duplicates(heavy_atom_hydrogen_shift_dict, carbon_dict, chiral_centers, plot=False, xlim=None, ylim=None)
-
-            COSY_shifts = sorted(COSY_shifts, key=lambda x: x[0])
+            # Generate COSY data
+            try:
+                COSY_shifts = plot_and_save_cosy_spectrum_with_zoom_no_duplicates(heavy_atom_hydrogen_shift_dict, carbon_dict, chiral_centers, plot=False, xlim=None, ylim=None)
+                COSY_shifts = sorted(COSY_shifts, key=lambda x: x[0])
+            except Exception as e:
+                print(f"Error generating COSY data for {sample_id}: {str(e)}")
+                continue
+                
+            if len(COSY_shifts) == 0:
+                print(f"No COSY shifts found for {sample_id}, skipping")
+                continue
 
             mol = Chem.RemoveHs(mol)
             smi = MolToSmiles(mol)     
@@ -1212,19 +1348,29 @@ def run_COSY_generation(config):
             smiles_list.append(smi)
             data_list.append(COSY_shifts)
             sample_id_list.append(sample_id)
-        except:
-            print(file_path)
+            print(f"Successfully processed COSY for {sample_id}, added to dataset")
+        except Exception as e:
+            print(f"Error processing COSY for {file_path}: {str(e)}")
+            import traceback
+            traceback.print_exc()
 
     # Create a DataFrame with the lists as columns
-    data = pd.DataFrame({
-        'SMILES': smiles_list,
-        'shifts': data_list,
-        'sample-id': sample_id_list,
-    })
-
-    data.reset_index(drop=True, inplace=True)
+    print(f"Creating COSY DataFrame with {len(smiles_list)} entries")
+    if len(smiles_list) > 0:
+        data = pd.DataFrame({
+            'SMILES': smiles_list,
+            'shifts': data_list,
+            'sample-id': sample_id_list,
+        })
+        data.reset_index(drop=True, inplace=True)
+    else:
+        print("Warning: No data was successfully processed for COSY generation")
+        data = pd.DataFrame(columns=['SMILES', 'shifts', 'sample-id'])
+    
+    # Save to CSV
     csv_COSY_path = os.path.join(config.SGNN_csv_save_folder, f"data_COSY_{config.ran_num}.csv")
     data.to_csv(csv_COSY_path, index=False)
+    print(f"Saved COSY CSV with {len(data)} rows to {csv_COSY_path}")
     return data, csv_COSY_path
 
 
@@ -1261,39 +1407,77 @@ def run_HSQC_generation(config):
 
     for file_path in nmr_files[:]:
         try:
-            sample_df = ncfd.load_dft_dft_comparison(file_path)
+            # Try to load the DFT comparison data
+            try:
+                sample_df = ncfd.load_dft_dft_comparison(file_path)
+                if sample_df is None or sample_df.empty:
+                    print(f"Error: No DFT comparison data found in {file_path}")
+                    continue
+            except Exception as e:
+                print(f"Error loading DFT comparison data from {file_path}: {str(e)}")
+                continue
 
             # Extract the sample_id from the path
             file_name = os.path.basename(file_path)
             sample_id = os.path.splitext(file_name)[0].split('NMR_')[-1]
+            print(f"Processing HSQC for sample ID: {sample_id}")
 
-            # Use the apply method to create a list of lists
-            HSQC_shifts = sample_df.apply(lambda row: [row['F2 (ppm)'], row['F1 (ppm)']], axis=1).tolist()
-            HSQC_shifts = sorted(HSQC_shifts, key=lambda x: x[0])
+            # Generate HSQC shifts
+            try:
+                # Use the apply method to create a list of lists
+                HSQC_shifts = sample_df.apply(lambda row: [row['F2 (ppm)'], row['F1 (ppm)']], axis=1).tolist()
+                HSQC_shifts = sorted(HSQC_shifts, key=lambda x: x[0])
+            except Exception as e:
+                print(f"Error generating HSQC shifts for {sample_id}: {str(e)}")
+                continue
+                
+            if len(HSQC_shifts) == 0:
+                print(f"No HSQC shifts found for {sample_id}, skipping")
+                continue
 
-            mol = SDMolSupplier(file_path)[0]   
-            mol = Chem.RemoveHs(mol)
-            smi = MolToSmiles(mol)   
+            # Load the molecule
+            try:
+                supplier = SDMolSupplier(file_path)
+                if supplier is None or len(supplier) == 0:
+                    print(f"Error: No molecules found in {file_path}")
+                    continue
+                mol = supplier[0]
+                if mol is None:
+                    print(f"Error: Could not load molecule from {file_path}")
+                    continue
+                mol = Chem.RemoveHs(mol)
+                smi = MolToSmiles(mol)
+            except Exception as e:
+                print(f"Error loading molecule from {file_path}: {str(e)}")
+                continue
 
             smiles_list.append(smi)
             data_list.append(HSQC_shifts)
             sample_id_list.append(sample_id)
-        except:
-            print(file_path)
+            print(f"Successfully processed HSQC for {sample_id}, added to dataset")
+        except Exception as e:
+            print(f"Error processing HSQC for {file_path}: {str(e)}")
+            import traceback
+            traceback.print_exc()
 
 
     # Create a DataFrame with the lists as columns
-    data = pd.DataFrame({
-        'SMILES': smiles_list,
-        'shifts': data_list,
-        'sample-id': sample_id_list,
-    })
-
-    data.reset_index(drop=True, inplace=True)
+    print(f"Creating HSQC DataFrame with {len(smiles_list)} entries")
+    if len(smiles_list) > 0:
+        data = pd.DataFrame({
+            'SMILES': smiles_list,
+            'shifts': data_list,
+            'sample-id': sample_id_list,
+        })
+        data.reset_index(drop=True, inplace=True)
+    else:
+        print("Warning: No data was successfully processed for HSQC generation")
+        data = pd.DataFrame(columns=['SMILES', 'shifts', 'sample-id'])
+    
+    # Save to CSV
     csv_HSQC_path = os.path.join(config.SGNN_csv_save_folder, f"data_HSQC_{config.ran_num}.csv")
-    #import IPython; IPython.embed();
-
-    data.to_csv(csv_HSQC_path)
+    data.to_csv(csv_HSQC_path, index=False)
+    print(f"Saved HSQC CSV with {len(data)} rows to {csv_HSQC_path}")
     return data, csv_HSQC_path
 
 ##############################################################################
