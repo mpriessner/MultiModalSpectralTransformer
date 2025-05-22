@@ -40,9 +40,9 @@ fi
 echo "Fetching updates from remote..."
 git fetch --all
 
-# Pull the latest changes from the target branch
+# Pull the latest changes from the target branch without opening editor
 echo "Pulling latest changes from origin/$TARGET_BRANCH..."
-git pull origin $TARGET_BRANCH
+git pull --no-edit origin $TARGET_BRANCH
 
 # Only show stash instructions if we actually stashed something
 if [ "$STASHED" = true ]; then
