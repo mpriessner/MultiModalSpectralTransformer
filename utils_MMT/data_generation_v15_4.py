@@ -877,7 +877,7 @@ def run_13C_generation(config):
     })
 
     csv_13C_path = os.path.join(config.SGNN_csv_save_folder, f"data_13C_{config.ran_num}.csv")
-    data.to_csv(csv_13C_path)
+    data.to_csv(csv_13C_path, index=False)
     return data, csv_13C_path
 
 
@@ -1204,9 +1204,7 @@ def run_HSQC_generation(config):
 
     data.reset_index(drop=True, inplace=True)
     csv_HSQC_path = os.path.join(config.SGNN_csv_save_folder, f"data_HSQC_{config.ran_num}.csv")
-    #import IPython; IPython.embed();
-
-    data.to_csv(csv_HSQC_path)
+    data.to_csv(csv_HSQC_path, index=False)
     return data, csv_HSQC_path
 
 ##############################################################################
