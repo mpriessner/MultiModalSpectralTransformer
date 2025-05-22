@@ -1407,28 +1407,67 @@ def run_HSQC_generation(config):
 
     for file_path in nmr_files[:]:
         try:
-            # Try to load the DFT comparison data
+            # Try to load the molecule
             try:
-                sample_df = ncfd.load_dft_dft_comparison(file_path)
-                if sample_df is None or sample_df.empty:
-                    print(f"Error: No DFT comparison data found in {file_path}")
+                supplier = SDMolSupplier(file_path)
+                if supplier is None or len(supplier) == 0:
+                    print(f"Error: No molecules found in {file_path}")
+                    continue
+                mol = supplier[0]
+                if mol is None:
+                    print(f"Error: Could not load molecule from {file_path}")
                     continue
             except Exception as e:
-                print(f"Error loading DFT comparison data from {file_path}: {str(e)}")
+                print(f"Error loading molecule from {file_path}: {str(e)}")
                 continue
-
+                
             # Extract the sample_id from the path
             file_name = os.path.basename(file_path)
             sample_id = os.path.splitext(file_name)[0].split('NMR_')[-1]
             print(f"Processing HSQC for sample ID: {sample_id}")
-
-            # Generate HSQC shifts
+            
+            # Get NMR shifts
             try:
-                # Use the apply method to create a list of lists
-                HSQC_shifts = sample_df.apply(lambda row: [row['F2 (ppm)'], row['F1 (ppm)']], axis=1).tolist()
+                if not mol.HasProp('averaged_NMR_shifts'):
+                    print(f"Error: No 'averaged_NMR_shifts' property in molecule from {file_path}")
+                    continue
+                    
+                averaged_nmr_shifts = mol.GetProp('averaged_NMR_shifts')
+                sample_shifts = list(map(float, averaged_nmr_shifts.split()))
+                
+                # Count non-hydrogen atoms
+                non_hydrogen_count = 0
+                hydrogen_indices = []
+                carbon_indices = []
+                
+                for atom_idx, atom in enumerate(mol.GetAtoms()):
+                    if atom.GetSymbol() == 'C':
+                        carbon_indices.append(atom_idx)
+                    elif atom.GetSymbol() == 'H':
+                        hydrogen_indices.append(atom_idx)
+                    if atom.GetSymbol() != 'H':
+                        non_hydrogen_count += 1
+                
+                # Generate HSQC shifts - correlate hydrogens with their attached carbons
+                HSQC_shifts = []
+                for h_idx in hydrogen_indices:
+                    h_atom = mol.GetAtomWithIdx(h_idx)
+                    for neighbor in h_atom.GetNeighbors():
+                        if neighbor.GetSymbol() == 'C':
+                            c_idx = neighbor.GetIdx()
+                            # Get the shifts for both atoms if they exist in the sample_shifts list
+                            if h_idx < len(sample_shifts) and c_idx < len(sample_shifts):
+                                h_shift = sample_shifts[h_idx]
+                                c_shift = sample_shifts[c_idx]
+                                if h_shift != 0 and c_shift != 0:  # Skip zero shifts
+                                    HSQC_shifts.append([h_shift, c_shift])
+                
+                # Sort by hydrogen shift
                 HSQC_shifts = sorted(HSQC_shifts, key=lambda x: x[0])
+                
             except Exception as e:
                 print(f"Error generating HSQC shifts for {sample_id}: {str(e)}")
+                traceback.print_exc()
                 continue
                 
             if len(HSQC_shifts) == 0:
