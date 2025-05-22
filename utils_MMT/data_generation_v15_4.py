@@ -1214,7 +1214,7 @@ def run_HSQC_generation(config):
 
 
 def organize_sdf_files(config):
-    """Move SDF files to a dedicated subfolder"""
+    """Move NMR SDF files to a dedicated subfolder and clean up other files"""
     # Ensure we have a random number
     if not hasattr(config, 'ran_num'):
         config.ran_num = random.randint(1, 100000)
@@ -1226,13 +1226,31 @@ def organize_sdf_files(config):
     
     # Find all SDF files in the main folder
     main_folder = config.SGNN_gen_folder_path
-    sdf_files = [f for f in os.listdir(main_folder) 
-                if f.endswith('.sdf') and os.path.isfile(os.path.join(main_folder, f))]
+    all_files = os.listdir(main_folder)
     
-    print(f"Found {len(sdf_files)} SDF files to organize")
+    # Separate files by type
+    nmr_sdf_files = []
+    non_nmr_sdf_files = []
+    mol_files = []
     
-    # Move each SDF file to the subfolder
-    for sdf_file in sdf_files:
+    for f in all_files:
+        if not os.path.isfile(os.path.join(main_folder, f)):
+            continue
+            
+        if f.endswith('.sdf'):
+            if f.startswith('NMR_'):
+                nmr_sdf_files.append(f)
+            else:
+                non_nmr_sdf_files.append(f)
+        elif f.endswith('.mol'):
+            mol_files.append(f)
+    
+    print(f"Found {len(nmr_sdf_files)} NMR SDF files to keep")
+    print(f"Found {len(non_nmr_sdf_files)} non-NMR SDF files to delete")
+    print(f"Found {len(mol_files)} MOL files to delete")
+    
+    # Move NMR SDF files to the subfolder
+    for sdf_file in nmr_sdf_files:
         src_path = os.path.join(main_folder, sdf_file)
         dst_path = os.path.join(sdf_subfolder, sdf_file)
         
@@ -1242,6 +1260,32 @@ def organize_sdf_files(config):
             print(f"Moved {sdf_file} to {sdf_subfolder}")
         except Exception as e:
             print(f"Error moving {sdf_file}: {str(e)}")
+    
+    # Delete non-NMR SDF files
+    for sdf_file in non_nmr_sdf_files:
+        try:
+            os.remove(os.path.join(main_folder, sdf_file))
+            print(f"Deleted non-NMR SDF file: {sdf_file}")
+        except Exception as e:
+            print(f"Error deleting {sdf_file}: {str(e)}")
+    
+    # Delete MOL files
+    for mol_file in mol_files:
+        try:
+            os.remove(os.path.join(main_folder, mol_file))
+            print(f"Deleted MOL file: {mol_file}")
+        except Exception as e:
+            print(f"Error deleting {mol_file}: {str(e)}")
+    
+    # Clean up any non-NMR SDF files in the subfolder (if they were moved there in a previous run)
+    subfolder_files = os.listdir(sdf_subfolder)
+    for f in subfolder_files:
+        if f.endswith('.sdf') and not f.startswith('NMR_'):
+            try:
+                os.remove(os.path.join(sdf_subfolder, f))
+                print(f"Deleted non-NMR SDF file from subfolder: {f}")
+            except Exception as e:
+                print(f"Error deleting {f} from subfolder: {str(e)}")
     
     return sdf_subfolder
 
