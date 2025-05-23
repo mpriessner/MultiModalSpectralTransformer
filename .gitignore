@@ -1,7 +1,10 @@
 # Ignore models directory containing large model files
 /models/
 /data/
-/experiment/
+/experiments/
+/past_experiments/
+/model_save_dir/
+/_trash/
 /dump/
 /Users/mpriessner/windsurf_repos/MultiModalSpectralTransformer/2.0_Automatic_NMR_Data_Generation.ipynb
 
