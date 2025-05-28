@@ -1590,3 +1590,151 @@ def filter_invalid_inputs(results_dict):
             counter+=1
     return filtered_dict, counter
 
+def calc_molecular_formula(smi):
+    try:
+        mol = Chem.MolFromSmiles(smi)
+        return CalcMolFormula(mol)
+    except:
+        return None
+
+def filter_for_MF_2(trg_conv_SMI, gen_conv_SMI, prob_list):
+    # Calculate the molecular formula of the target molecule
+    trg_mf = calc_molecular_formula(trg_conv_SMI)
+
+    # Filter the list based on molecular formula
+    filtered_gen_smis = [smi for (smi, token_prob) in zip(gen_conv_SMI, prob_list) if calc_molecular_formula(smi) == trg_mf]
+    filtered_prob_list = [token_prob for (smi, token_prob) in zip(gen_conv_SMI, prob_list) if calc_molecular_formula(smi) == trg_mf]
+    return filtered_gen_smis, filtered_prob_list
+
+
+def run_multinomial_sampling_v2(config, model_MMT, val_dataloader, itos, stoi, MW_filter=False, MF_filter=False):
+    n_times = config.multinom_runs
+    results_dict = defaultdict(list)
+    temperature_orig = config.temperature
+
+    for idx, data_dict in tqdm(enumerate(val_dataloader)):
+        if idx % 10 == 0:
+            print(idx)
+
+        gen_conv_SMI_list, trg_conv_SMI_list, token_probs_list, src_HSQC_list, prob_list = [], [], [], [], []
+        data_dict_dup = rbgvm.duplicate_dict(data_dict, 16)
+
+        trg_enc_SMI = data_dict["trg_enc_SMI"][0]
+        trg_conv_SMI = hf.tensor_to_smiles(trg_enc_SMI[1:], itos)
+        memory, src_padding_mask, trg_enc_SMI, fingerprint, src_HSQC, src_COSY = vgmmt.run_model(model_MMT,
+                                                                   data_dict_dup, 
+                                                                   config)
+        counter = 1
+        removed = 0
+        while len(gen_conv_SMI_list) < n_times:
+            # Increase the temperature if not enough different molecules get generated               
+            if counter % 80 == 0:
+                print(trg_conv_SMI)
+                break
+            multinom_tensor, multinom_token_prob = multinomial_sequence_multi_2(model_MMT, memory, src_padding_mask, stoi, config)
+            gen_conv_SMI, token_probs = hf.tensor_to_smiles_and_prob_2(multinom_tensor, multinom_token_prob, itos)
+
+            # Filter valid SMILES and canonicalize
+            gen_conv_SMI, token_probs = filter_probs_and_valid_smiles_and_canonicolize(gen_conv_SMI, token_probs)
+            #print(f"valid smi: {len(set(gen_conv_SMI))}")
+            #import IPython; IPython.embed();
+            before_gen = len(gen_conv_SMI)
+            if MW_filter:
+                gen_conv_SMI, token_probs = filter_for_MW_2(trg_conv_SMI, gen_conv_SMI, token_probs)
+                #print(f"MW_filter: {before_gen - len(gen_conv_SMI)}")
+                removed_1 = before_gen - len(gen_conv_SMI)
+                removed += removed_1
+            if MF_filter:
+                gen_conv_SMI, token_probs = filter_for_MF_2(trg_conv_SMI, gen_conv_SMI, token_probs)
+                #print(f"MF_filter: {before_gen - len(gen_conv_SMI)}")
+                removed_2 = before_gen - len(gen_conv_SMI)
+                removed += removed_2
+
+            gen_conv_SMI_list.extend(gen_conv_SMI)
+            prob_list.extend(token_probs)
+            gen_conv_SMI_list, prob_list = deduplicate_smiles(gen_conv_SMI_list, prob_list)
+            counter += 1
+            config.temperature = config.temperature + 0.1
+        #print(removed, len(gen_conv_SMI_list))
+        gen_conv_SMI_list = gen_conv_SMI_list[:n_times]
+        prob_list = prob_list[:n_times]
+        trg_conv_SMI_list = [trg_conv_SMI for _ in range(len(gen_conv_SMI_list))]
+
+        tanimoto_mean, tanimoto_std_dev, failed, tanimoto_list_all = vgmmt.calculate_tanimoto_similarity(gen_conv_SMI_list, trg_conv_SMI_list)
+        results_dict[idx].append({
+            'gen_conv_SMI_list': gen_conv_SMI_list,
+            'trg_conv_SMI_list': trg_conv_SMI_list,
+            'tanimoto_sim': tanimoto_list_all,
+            'tanimoto_mean': tanimoto_mean,
+            'tanimoto_std_dev': tanimoto_std_dev,
+            'failed': failed,
+            'prob_list': prob_list,
+        })
+        config.temperature = temperature_orig
+    return config, results_dict
+
+def run_precentage_calculation_v2(config, itos, stoi, stoi_MF, MW_filter=False, MF_filter=False):
+    model_MMT = load_MMT_model(config)
+    val_dataloader = load_data(config, stoi, stoi_MF, single=True, mode="val")  
+    config.temperature = 1
+    config, results_dict_mns_10 = run_multinomial_sampling_v2(config, model_MMT, val_dataloader, itos, stoi, MW_filter=MW_filter, MF_filter=MF_filter)
+    top_x = 10
+    percentage_top_10 = calc_percentage_top_x_correct(results_dict_mns_10, top_x)
+    top_x = 5
+    percentage_top_5 = calc_percentage_top_x_correct(results_dict_mns_10, top_x)
+    top_x = 3
+    percentage_top_3 = calc_percentage_top_x_correct(results_dict_mns_10, top_x)
+    top_x = 1
+    percentage_top_1 = calc_percentage_top_x_correct(results_dict_mns_10, top_x)
+    
+    val_dataloader_multi = load_data(config, stoi, stoi_MF, single=False, mode="val")  
+    config, results_dict_greedy = run_greedy_sampling_v2(config, model_MMT, val_dataloader_multi, itos, stoi, MW_filter=False, MF_filter=False)
+    #config, results_dict_greedy = run_greedy_sampling(config, model_MMT, val_dataloader_multi, itos, stoi, MW_filter=MW_filter)
+
+    percentage_1_greedy = calc_percentage_top_x_correct_greedy(results_dict_greedy)
+
+    percentage_collection = [percentage_1_greedy, percentage_top_1, percentage_top_3, percentage_top_5, percentage_top_10]
+
+    return percentage_collection, results_dict_mns_10, results_dict_greedy
+
+def run_greedy_sampling_v2(config, model_MMT, val_dataloader, itos, stoi, MW_filter=False, MF_filter=False):
+    results_dict = defaultdict(list)
+    gen_conv_SMI_list, trg_conv_SMI_list, prob_list, src_HSQC_list, src_COSY_list = [], [], [], [], []
+    for idx, data_dict in enumerate(val_dataloader):
+        trg_enc_SMI = data_dict["trg_enc_SMI"]
+        trg_conv_SMI = hf.tensor_to_smiles(trg_enc_SMI.T[1:], itos)
+        memory, src_padding_mask, trg_enc_SMI, fingerprint, src_HSQC, src_COSY = vgmmt.run_model(model_MMT,
+                                                                   data_dict, 
+                                                                   config)
+
+        greedy_tensor, greedy_token_prob = greedy_sequence_2(model_MMT, stoi, itos, memory, src_padding_mask, config)
+
+        gen_conv_SMI, token_probs = hf.tensor_to_smiles_and_prob(greedy_tensor, greedy_token_prob.T, itos)
+
+        # Filter valid SMILES and canonicalize
+        """gen_conv_SMI, token_probs = filter_probs_and_valid_smiles_and_canonicolize(gen_conv_SMI, token_probs)
+        if MW_filter:
+            gen_conv_SMI, token_probs = filter_for_MW_2(trg_conv_SMI[0], gen_conv_SMI, token_probs)
+        if MF_filter:
+            gen_conv_SMI, token_probs = filter_for_MF_2(trg_conv_SMI[0], gen_conv_SMI, token_probs)
+        """
+        gen_conv_SMI_list.extend(gen_conv_SMI)
+        trg_conv_SMI_list.extend(trg_conv_SMI)
+        prob_list.extend(token_probs)
+        src_HSQC_list.extend(src_HSQC)
+        src_COSY_list.extend(src_COSY)
+        
+    tanimoto_mean, tanimoto_std_dev, failed, tanimoto_list_all = vgmmt.calculate_tanimoto_similarity(gen_conv_SMI_list, trg_conv_SMI_list)
+    results_dict = {
+        'gen_conv_SMI_list': gen_conv_SMI_list,
+        'trg_conv_SMI_list': trg_conv_SMI_list,
+        'tanimoto_sim': tanimoto_list_all,
+        'tanimoto_mean': tanimoto_mean,
+        'tanimoto_std_dev': tanimoto_std_dev,
+        'failed': failed,
+        'prob_list': prob_list,
+        "src_HSQC_list": src_HSQC_list,
+        "src_COSY_list": src_COSY_list,
+        }
+    
+    return config, results_dict
