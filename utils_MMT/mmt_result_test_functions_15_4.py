@@ -38,7 +38,7 @@ import utils_MMT.run_batch_gen_val_MMT_v15_4 as rbgvm
 from utils_MMT.dataloaders_pl_v15_4 import MultimodalData, collate_fn
 from utils_MMT.models_MMT_v15_4 import MultimodalTransformer, TransformerMultiGPU
 from utils_MMT.models_CLIP_v15_4 import CLIPMultiGPU  # CHANGE WHEN I HAVE A CLIP V8 model trained
-from utils_MMT.models_BLIP_v15_4 import BLIPMultiGPU  # CHANGE WHEN I HAVE A CLIP V8 model trained
+# from utils_MMT.models_BLIP_v15_4 import BLIPMultiGPU  # CHANGE WHEN I HAVE A CLIP V8 model trained
 
 
 
@@ -489,16 +489,16 @@ def load_CLIP_model(config):
 
 
 
-def load_BLIP_model(config):
+# def load_BLIP_model(config):
 
-    BLIP_multi_gpu_model = BLIPMultiGPU(config)
-    checkpoint_path = config.BLIP_model_path
-    BLIP_model = BLIP_multi_gpu_model.load_from_checkpoint(config=config, checkpoint_path=checkpoint_path)
+#     BLIP_multi_gpu_model = BLIPMultiGPU(config)
+#     checkpoint_path = config.BLIP_model_path
+#     BLIP_model = BLIP_multi_gpu_model.load_from_checkpoint(config=config, checkpoint_path=checkpoint_path)
 
-    #CLIP_model, optimizer = CLIP_make(config, stoi, stoi_MF, itos)
-    BLIP_model.to(config.device)
+#     #CLIP_model, optimizer = CLIP_make(config, stoi, stoi_MF, itos)
+#     BLIP_model.to(config.device)
 
-    return BLIP_model.BLIP_model
+#     return BLIP_model.BLIP_model
 
 
 def run_test_mns_performance_CLIP_3(config, 
