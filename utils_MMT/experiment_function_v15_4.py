@@ -47,6 +47,7 @@ def perform_dimensionality_reduction(fingerprints):
 
     return tsne_result, pca_result, umap_result
 
+
 def plot_tsne_umap_pca(results, labels, title, methods, save_folder):
     fig, axes = plt.subplots(1, 3, figsize=(20, 6))
     fig.suptitle(title, fontsize=16)
@@ -64,7 +65,10 @@ def plot_tsne_umap_pca(results, labels, title, methods, save_folder):
         ax.set_yticks([])
 
     plt.tight_layout()
-    #plt.savefig(f"{title.replace(' ', '_')}.png")
+    # Create the save folder if it doesn't exist
+    os.makedirs(save_folder, exist_ok=True)
+   
+    # Save the figure in the specified folder
     save_path = os.path.join(save_folder, f"{title.replace(' ', '_')}.png")
     plt.savefig(save_path)
     plt.close()
