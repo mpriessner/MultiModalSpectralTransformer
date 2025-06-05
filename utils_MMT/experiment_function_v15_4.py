@@ -47,26 +47,29 @@ def perform_dimensionality_reduction(fingerprints):
 
     return tsne_result, pca_result, umap_result
 
-
-def plot_tsne_umap_pca(results, labels, title, methods):
+def plot_tsne_umap_pca(results, labels, title, methods, save_folder):
     fig, axes = plt.subplots(1, 3, figsize=(20, 6))
     fig.suptitle(title, fontsize=16)
 
     for ax, result, method in zip(axes, results, methods):
         zinc_mask = labels == 'ZINC'
         pubchem_mask = labels == 'PubChem'
-        
+       
         ax.scatter(result[zinc_mask, 0], result[zinc_mask, 1], c='blue', label='ZINC', alpha=0.1)
         ax.scatter(result[pubchem_mask, 0], result[pubchem_mask, 1], c='red', label='PubChem', alpha=1.0)
-        
+       
         ax.legend()
         ax.set_title(method)
         ax.set_xticks([])
         ax.set_yticks([])
 
     plt.tight_layout()
-    plt.savefig(f"{title.replace(' ', '_')}.png")
+    #plt.savefig(f"{title.replace(' ', '_')}.png")
+    save_path = os.path.join(save_folder, f"{title.replace(' ', '_')}.png")
+    plt.savefig(save_path)
     plt.close()
+
+
     
 
 ########################################################################
@@ -520,7 +523,7 @@ def load_pickle_data(file_path, sample_size=None):
 
 
 
-def plot_tsne_umap_pca_train_test(results, labels, title, methods):
+def plot_tsne_umap_pca_train_test(results, labels, title, methods, save_folder):
     plt.rcParams.update({'font.size': 22})  # Set base font size
     fig, axes = plt.subplots(1, 3, figsize=(20, 8))
     fig.suptitle(title, fontsize=22)
@@ -529,7 +532,7 @@ def plot_tsne_umap_pca_train_test(results, labels, title, methods):
         for label, color, alpha in zip(set(labels), ['#A1C8F3', '#FFB381'], [0.5, 0.5]):
             mask = np.array(labels) == label
             ax.scatter(result[mask, 0], result[mask, 1], c=color, label=label, alpha=alpha)
-        
+       
         ax.legend(fontsize=22)  # Set legend font size
         ax.set_title(method, fontsize=22, pad=20)  # Set subplot title font size and add padding
         ax.set_xticks([])
@@ -537,11 +540,13 @@ def plot_tsne_umap_pca_train_test(results, labels, title, methods):
 
     plt.tight_layout()
     #plt.savefig(f"{title.replace(' ', '_')}.png")
-    save_folder = "/projects/cc/se_users/knlr326/1_NMR_project/1_NMR_data_AZ/___FIGURES_PAPERS/Figures_Paper_2"
+    # save_folder = "/projects/cc/se_users/knlr326/1_NMR_project/1_NMR_data_AZ/___FIGURES_PAPERS/Figures_Paper_2"
     save_path = os.path.join(save_folder, f"{title.replace(' ', '_')}.png")
     plt.savefig(save_path)
 
     plt.close()
+
+
 
 
 def plot_tsne_umap_pca_train_test_folder(results, labels, title, methods, save_folder):
