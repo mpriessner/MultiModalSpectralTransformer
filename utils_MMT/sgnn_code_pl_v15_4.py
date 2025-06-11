@@ -136,6 +136,9 @@ def mol2SDF(mol, folder=None, name=None):
     """ Saves a smile to a given folder with a given name/ID in sdf format
     adding the H is crutial for the ICOLOS workflow
     ir no name is provided then it saves it under a random number"""
+    #print("mol2SDF")
+    #import IPython; IPython.embed();
+    
     if name==None:
         rand_num = random.randint(0,1000)
         name = "%04d" % (rand_num)
@@ -145,7 +148,8 @@ def mol2SDF(mol, folder=None, name=None):
     # Build the default folder path relative to the script's location
     if folder is None:
         folder = os.path.abspath(os.path.join(script_dir, '../../trash'))
-        os.makedirs(folder, exist_ok=True)
+    os.makedirs(folder, exist_ok=True)
+    
     name = name+".sdf"
     save_path = os.path.join(folder,name)
 

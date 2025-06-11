@@ -279,7 +279,13 @@ def run_sgnn_sim_calculations_if_possible_return_spectra(df_succ_smis, tensor_HS
     """
 
     try:
-        batch_data, failed_ids = sc.main_execute(df_succ_smis, sgnn_means_stds, config.ML_dump_folder, int(config.batch_size / config.gpu_num))
+        print("run_sgnn_sim_calculations_if_possible_return_spectra")
+        # import IPython; IPython.embed();
+        parent_dir = os.path.dirname(config.ML_dump_folder)  # This gives you the 'exp_1' directory
+        # Set the new dump folder path
+        dump_folder = os.path.join(parent_dir, f"SGNN_gen_folder_{config.ran_num}", f"sdf_{config.ran_num}")
+
+        batch_data, failed_ids = sc.main_execute(df_succ_smis, sgnn_means_stds, dump_folder, int(config.batch_size / config.gpu_num))
     except Exception as e:
         # Handle exceptions from batch data execution
         return None, None, None, None, None
@@ -287,7 +293,7 @@ def run_sgnn_sim_calculations_if_possible_return_spectra(df_succ_smis, tensor_HS
     ### run the single generations 
     df_failed = df_succ_smis[df_succ_smis['sample-id'].isin(failed_ids)]   
     try:
-         batch_data_add_1, failed_ids = sc.main_execute(df_failed, sgnn_means_stds, config.ML_dump_folder, 10)
+         batch_data_add_1, failed_ids = sc.main_execute(df_failed, sgnn_means_stds, dump_folder, 10)
     except Exception as e:
         # Handle exceptions from batch data execution
         return None, None, None, None, None
@@ -295,7 +301,7 @@ def run_sgnn_sim_calculations_if_possible_return_spectra(df_succ_smis, tensor_HS
     ### run the single generations 
     df_failed = df_succ_smis[df_succ_smis['sample-id'].isin(failed_ids)]   
     try:
-         batch_data_add_2, failed_ids = sc.main_execute(df_failed, sgnn_means_stds, config.ML_dump_folder, 1)
+         batch_data_add_2, failed_ids = sc.main_execute(df_failed, sgnn_means_stds, dump_folder, 1)
     except Exception as e:
         # Handle exceptions from batch data execution
         return None, None, None, None, None

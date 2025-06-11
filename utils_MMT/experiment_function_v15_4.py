@@ -702,7 +702,7 @@ def save_examples_as_csv(smiles_list, output_path, prefix):
 def process_dataset(data_config, train_vectors, train_smiles, output_folder, ranking_method):
     weight_range = data_config['weight_range']
     pkl_folder = data_config['pkl_folder']
-    #file_path = data_config['file_path']
+    file_path = data_config['file_path']
 
     all_rankings = process_pkl_files_baseline(pkl_folder, ranking_method)
     all_rankings, removed_smiles = deduplicate_smiles_from_ranking(all_rankings)
@@ -711,7 +711,7 @@ def process_dataset(data_config, train_vectors, train_smiles, output_folder, ran
     accuracies = calculate_top_k_accuracy(all_rankings)
     count_rank_one, smiles_rank_one, smiles_not_rank_one = analyze_molecules_by_sim_rank(all_rankings)
 
-    #vectors, smiles, df = load_pickle_data_df(file_path)
+    vectors, smiles, df = load_pickle_data_df(file_path)
 
     df_filtered_positive = df[df["SMILES"].isin(smiles_rank_one)]
     df_filtered_negative = df[df["SMILES"].isin(smiles_not_rank_one)]
@@ -730,6 +730,126 @@ def process_dataset(data_config, train_vectors, train_smiles, output_folder, ran
                  ['t-SNE', 'PCA', 'UMAP'],
                  output_folder)
 
+def process_dataset_(data_config, train_vectors, train_smiles, output_folder, ranking_method):
+    weight_range = data_config['weight_range']
+    pkl_folder = data_config['pkl_folder']
+    file_path = data_config['file_path']
+
+    all_rankings = process_pkl_files_baseline(pkl_folder, ranking_method)
+    all_rankings, removed_smiles = deduplicate_smiles_from_ranking(all_rankings)
+    all_rankings, filtered_out_rankings = filter_rankings_by_molecular_formula(all_rankings)
+
+    accuracies = calculate_top_k_accuracy(all_rankings)
+    count_rank_one, smiles_rank_one, smiles_not_rank_one = analyze_molecules_by_sim_rank(all_rankings)
+
+    # Load the pickle data
+    vectors, smiles, df = load_pickle_data_df(file_path)
+    
+    # Filter vectors by finding indices of SMILES in the original lists
+    test_vectors_sample_positive, test_vectors_sample_negative = filter_vectors_by_smiles(
+        vectors, smiles, smiles_rank_one, smiles_not_rank_one
+    )
+
+    combined_vectors = np.vstack((train_vectors, test_vectors_sample_positive, test_vectors_sample_negative))
+    labels = ['ZINC'] * len(train_vectors) + [f'{weight_range}_pos'] * len(test_vectors_sample_positive) + [f'{weight_range}_neg'] * len(test_vectors_sample_negative)
+
+    print(f"Performing dimensionality reduction for {weight_range}...")
+    tsne_result, pca_result, umap_result = perform_dimensionality_reduction(combined_vectors)
+
+    print(f"Plotting results for {weight_range}...")
+    plot_results([tsne_result, pca_result, umap_result], labels, 
+                 f"Train vs Test Vectors_ ({weight_range})", 
+                 ['t-SNE', 'PCA', 'UMAP'],
+                 output_folder)
+
+
+def filter_vectors_by_smiles(vectors, smiles_list, smiles_positive, smiles_negative):
+    """
+    Filter vectors by finding the indices of SMILES in the original lists.
+    
+    Args:
+        vectors: numpy array of vectors
+        smiles_list: list of SMILES strings corresponding to the vectors
+        smiles_positive: list of SMILES that should be in the positive set
+        smiles_negative: list of SMILES that should be in the negative set
+    
+    Returns:
+        tuple: (positive_vectors, negative_vectors)
+    """
+    # Convert to sets for faster lookup
+    smiles_positive_set = set(smiles_positive)
+    smiles_negative_set = set(smiles_negative)
+    
+    # Find indices of positive and negative SMILES
+    positive_indices = []
+    negative_indices = []
+    
+    for i, smile in enumerate(smiles_list):
+        if smile in smiles_positive_set:
+            positive_indices.append(i)
+        elif smile in smiles_negative_set:
+            negative_indices.append(i)
+    
+    # Extract vectors at these indices
+    test_vectors_sample_positive = vectors[positive_indices] if positive_indices else np.empty((0, vectors.shape[1]))
+    test_vectors_sample_negative = vectors[negative_indices] if negative_indices else np.empty((0, vectors.shape[1]))
+    
+    print(f"Found {len(positive_indices)} positive samples and {len(negative_indices)} negative samples")
+    print(f"Positive vector shape: {test_vectors_sample_positive.shape}")
+    print(f"Negative vector shape: {test_vectors_sample_negative.shape}")
+    
+    return test_vectors_sample_positive, test_vectors_sample_negative
+
+
+# Alternative version with more detailed logging
+def filter_vectors_by_smiles_verbose(vectors, smiles_list, smiles_positive, smiles_negative):
+    """
+    Filter vectors by finding the indices of SMILES in the original lists with verbose logging.
+    """
+    # Convert to sets for faster lookup
+    smiles_positive_set = set(smiles_positive)
+    smiles_negative_set = set(smiles_negative)
+    
+    print(f"Total vectors: {len(vectors)}")
+    print(f"Total SMILES: {len(smiles_list)}")
+    print(f"Target positive SMILES: {len(smiles_positive_set)}")
+    print(f"Target negative SMILES: {len(smiles_negative_set)}")
+    
+    # Find indices of positive and negative SMILES
+    positive_indices = []
+    negative_indices = []
+    found_positive = set()
+    found_negative = set()
+    
+    for i, smile in enumerate(smiles_list):
+        if smile in smiles_positive_set:
+            positive_indices.append(i)
+            found_positive.add(smile)
+        elif smile in smiles_negative_set:
+            negative_indices.append(i)
+            found_negative.add(smile)
+    
+    # Report matching statistics
+    print(f"Found {len(found_positive)}/{len(smiles_positive_set)} positive SMILES")
+    print(f"Found {len(found_negative)}/{len(smiles_negative_set)} negative SMILES")
+    
+    missing_positive = smiles_positive_set - found_positive
+    missing_negative = smiles_negative_set - found_negative
+    
+    if missing_positive:
+        print(f"Missing positive SMILES: {len(missing_positive)} (showing first 5): {list(missing_positive)[:5]}")
+    if missing_negative:
+        print(f"Missing negative SMILES: {len(missing_negative)} (showing first 5): {list(missing_negative)[:5]}")
+    
+    # Extract vectors at these indices
+    test_vectors_sample_positive = vectors[positive_indices] if positive_indices else np.empty((0, vectors.shape[1]))
+    test_vectors_sample_negative = vectors[negative_indices] if negative_indices else np.empty((0, vectors.shape[1]))
+    
+    print(f"Positive vector shape: {test_vectors_sample_positive.shape}")
+    print(f"Negative vector shape: {test_vectors_sample_negative.shape}")
+    
+    return test_vectors_sample_positive, test_vectors_sample_negative
+    
 
 def rank_molecules_in_file(file_data, ranking_method):
     molecule_data = []
