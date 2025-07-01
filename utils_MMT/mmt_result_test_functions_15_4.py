@@ -1628,7 +1628,7 @@ def run_multinomial_sampling_v2(config, model_MMT, val_dataloader, itos, stoi, M
         removed = 0
         while len(gen_conv_SMI_list) < n_times:
             # Increase the temperature if not enough different molecules get generated               
-            if counter % 80 == 0:
+            if counter % 5 == 0:
                 print(trg_conv_SMI)
                 break
             multinom_tensor, multinom_token_prob = multinomial_sequence_multi_2(model_MMT, memory, src_padding_mask, stoi, config)
@@ -1654,7 +1654,7 @@ def run_multinomial_sampling_v2(config, model_MMT, val_dataloader, itos, stoi, M
             prob_list.extend(token_probs)
             gen_conv_SMI_list, prob_list = deduplicate_smiles(gen_conv_SMI_list, prob_list)
             counter += 1
-            config.temperature = config.temperature + 0.1
+            config.temperature = config.temperature + 0.2
         #print(removed, len(gen_conv_SMI_list))
         gen_conv_SMI_list = gen_conv_SMI_list[:n_times]
         prob_list = prob_list[:n_times]
