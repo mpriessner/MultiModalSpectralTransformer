@@ -301,8 +301,11 @@ def simulate(SMILES_Path):
         
         print("Setting simulated flag and SMILES path in config")
         config.simulated = True
-        # Ensure SGNN_csv_gen_smi has a leading slash but avoid double slashes
-        config.SGNN_csv_gen_smi = "/" + SMILES_Path.lstrip('/')
+        
+        # Convert to absolute path to ensure it works correctly in clean_dataset
+        absolute_path = os.path.abspath(SMILES_Path)
+        print(f"Converting to absolute path: {absolute_path}")
+        config.SGNN_csv_gen_smi = absolute_path
         print(f"Updated SGNN_csv_gen_smi: {config.SGNN_csv_gen_smi}")
         
         print("Saving updated config")
