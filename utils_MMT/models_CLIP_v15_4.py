@@ -51,7 +51,17 @@ def CLIP_make(config, stoi, stoi_MF, itos):
     #dataloaders = create_CLIP_dataloaders(config, stoi, stoi_MF)
 
     # Load Chemberta model
-    chemberta = RobertaModel.from_pretrained(config.model_version, output_attentions=True)
+    print(f"Attempting to load Chemberta model from: {config.model_version}")
+    print(f"Model version path exists: {os.path.exists(config.model_version)}")
+    print(f"Config file exists: {os.path.exists(os.path.join(config.model_version, 'config.json'))}")
+    
+    try:
+        chemberta = RobertaModel.from_pretrained(config.model_version, output_attentions=True)
+        print("Successfully loaded Chemberta model")
+    except Exception as e:
+        print(f"Error loading Chemberta model: {str(e)}")
+        raise
+
     sigmoid = False if config.loss_fn=="BCEWithLogitsLoss" else True
     CB_model = ChembertaFingerprint(chemberta, config, sigmoid)
     CB_state = torch.load(config.CB_model_path)
