@@ -634,18 +634,20 @@
                 sendLogToServer();
             });
 
-            // Call initConsole when the DOM is loaded
-            document.addEventListener('DOMContentLoaded', initConsole);
-
-                document.addEventListener('DOMContentLoaded', () => {
+            // Call initConsole when the DOM is loaded - consolidate the two listeners
+            document.addEventListener('DOMContentLoaded', function() {
+                // Initialize console
                 initConsole();
+                // Initialize tooltips
                 $('[data-toggle="tooltip"]').tooltip();
-
             });
             // ^^^------------------ Console ----------------------^^^
 
 
             let currentNMRType = '1H';
+
+            // Add simple check to verify button exists
+            console.log("Checking simulate button exists:", !!document.getElementById('simulate_button'));
 
             document.getElementById('simulate_button').addEventListener('click', async function() {
                 console.log("SIMULATE BUTTON CLICKED - INITIAL TEST");
@@ -662,7 +664,12 @@
                     document.getElementById('simulate_button').disabled = true;
                     document.getElementById('simulate_button').innerHTML = 'Simulating...';
 
-                    const response = await fetch(`/simulate/${encodeURIComponent(SMILES_Path)}`);
+                    // Log the URL we're fetching
+                    const url = `/simulate/${encodeURIComponent(SMILES_Path)}`;
+                    console.log("Sending fetch request to:", url);
+                    
+                    const response = await fetch(url);
+                    console.log("Fetch response received:", response);
 
                     if (!response.ok) {
                         const errorData = await response.json();
