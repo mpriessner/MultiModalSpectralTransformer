@@ -44,9 +44,51 @@ def parse_arguments(hyperparameters):
 
 # Function to generate spectral data from smiles (dummy function for demonstration)
 def generate_spectral_data_batch(args, smiles_list):
-    avg_preds, predictions_df = make_predictions(args, smiles=smiles_list)
-    # TODO: Implement the neural network-based spectral data generation
-    return avg_preds, predictions_df
+    print("=" * 50)
+    print("Starting generate_spectral_data_batch function")
+    print(f"Current working directory: {os.getcwd()}")
+    
+    print("IR model configuration:")
+    print(f"Checkpoint directory: {args.checkpoint_dir}")
+    
+    # Check if checkpoint directory exists
+    if isinstance(args.checkpoint_dir, list):
+        for i, path in enumerate(args.checkpoint_dir):
+            print(f"Checking checkpoint directory {i}: {path}")
+            print(f"Path exists: {os.path.exists(path)}")
+            if os.path.exists(path):
+                print(f"Directory contents: {os.listdir(path)}")
+            else:
+                print(f"CRITICAL ERROR: Checkpoint directory {path} does not exist!")
+                print(f"This directory is required for IR simulation to work.")
+                print(f"Please create the directory structure: models/chemprop-ir/ir_models_data/experiment_model/model_files/")
+                print(f"And populate it with the required model files.")
+    else:
+        print(f"Checking checkpoint directory: {args.checkpoint_dir}")
+        print(f"Path exists: {os.path.exists(args.checkpoint_dir)}")
+        if os.path.exists(args.checkpoint_dir):
+            print(f"Directory contents: {os.listdir(args.checkpoint_dir)}")
+        else:
+            print(f"CRITICAL ERROR: Checkpoint directory {args.checkpoint_dir} does not exist!")
+            print(f"This directory is required for IR simulation to work.")
+            print(f"Please create the directory structure: models/chemprop-ir/ir_models_data/experiment_model/model_files/")
+            print(f"And populate it with the required model files.")
+    
+    try:
+        print(f"Attempting to make predictions for {len(smiles_list)} SMILES strings")
+        avg_preds, predictions_df = make_predictions(args, smiles=smiles_list)
+        print("Predictions completed successfully")
+        return avg_preds, predictions_df
+    except Exception as e:
+        print(f"ERROR in make_predictions: {str(e)}")
+        import traceback
+        print(traceback.format_exc())
+        # Return dummy data to allow the process to continue for debugging
+        print("Returning dummy data for debugging purposes")
+        dummy_preds = [[0.0] * 1800 for _ in range(len(smiles_list))]
+        dummy_df = pd.DataFrame({'SMILES': smiles_list})
+        print("=" * 50)
+        raise Exception(f"IR simulation failed: {str(e)}")
 
 
 def run_IR_simulation(config, args, mode):
