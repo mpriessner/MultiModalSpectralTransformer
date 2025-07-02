@@ -222,6 +222,45 @@
     </style>
     </head>
     <body>
+        <script>
+            // Basic test to see if JavaScript is running at all
+            console.log("BASIC TEST: JavaScript is running");
+            
+            // Function to add a visible message to the page
+            function addVisibleMessage(message) {
+                const div = document.createElement('div');
+                div.style.position = 'fixed';
+                div.style.top = '10px';
+                div.style.left = '10px';
+                div.style.backgroundColor = 'red';
+                div.style.color = 'white';
+                div.style.padding = '10px';
+                div.style.zIndex = '9999';
+                div.textContent = message;
+                document.body.appendChild(div);
+            }
+            
+            // Add a visible message
+            window.onload = function() {
+                addVisibleMessage("JavaScript is working!");
+            };
+            
+            // Test if the simulate button exists after DOM is loaded
+            document.addEventListener('DOMContentLoaded', function() {
+                console.log("DOM content loaded");
+                const simulateButton = document.getElementById('simulate_button');
+                if (simulateButton) {
+                    console.log("Simulate button found");
+                    simulateButton.onclick = function() {
+                        console.log("Simulate button clicked");
+                        addVisibleMessage("Simulate button clicked!");
+                    };
+                } else {
+                    console.error("Simulate button not found");
+                    addVisibleMessage("ERROR: Simulate button not found!");
+                }
+            });
+        </script>
         <!-- Hidden file input -->
         <input type="file" class="form-control-file file-input" id="fileInput" accept=".csv" style="display: none;" multiple>
 
@@ -1076,6 +1115,34 @@
             document.getElementById('molecule_image').src = '';
             
        
+        // Add a very basic test event listener to verify JavaScript is working
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log("DOMContentLoaded event fired - JavaScript is running");
+            
+            // Test all buttons with a basic click handler
+            const allButtons = document.querySelectorAll('button');
+            allButtons.forEach(button => {
+                button.addEventListener('click', function(e) {
+                    console.log(`Button clicked: ${this.id || this.textContent}`);
+                    alert(`Button clicked: ${this.id || this.textContent}`);
+                });
+            });
+            
+            // Specifically test the simulate button
+            const simulateButton = document.getElementById('simulate_button');
+            if (simulateButton) {
+                console.log("Simulate button found, adding test listener");
+                simulateButton.addEventListener('click', function() {
+                    console.log("SIMULATE BUTTON CLICKED - TEST LISTENER");
+                    alert("SIMULATE BUTTON CLICKED - TEST LISTENER");
+                });
+            } else {
+                console.error("Simulate button not found!");
+                alert("Simulate button not found!");
+            }
+        });
+
+            let currentNMRType = '1H';
         </script>
     </body>
 </html>

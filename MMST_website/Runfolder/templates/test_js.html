@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>JavaScript Test Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        button {
+            padding: 10px;
+            margin: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        #status {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            background-color: #f9f9f9;
+        }
+    </style>
+</head>
+<body>
+    <h1>JavaScript Test Page</h1>
+    <p>This page tests basic JavaScript functionality.</p>
+    
+    <button id="testButton">Test Button</button>
+    <button id="testFetch">Test Fetch API</button>
+    
+    <div id="status">Status: Waiting for action...</div>
+    
+    <script>
+        // Log that JavaScript is running
+        console.log("JavaScript is running on test page");
+        document.getElementById("status").innerHTML = "Status: JavaScript is running!";
+        
+        // Add event listener to test button
+        document.getElementById("testButton").addEventListener("click", function() {
+            console.log("Test button clicked");
+            document.getElementById("status").innerHTML = "Status: Button clicked at " + new Date().toLocaleTimeString();
+        });
+        
+        // Test fetch API
+        document.getElementById("testFetch").addEventListener("click", async function() {
+            document.getElementById("status").innerHTML = "Status: Testing fetch...";
+            try {
+                const response = await fetch('/');
+                const status = response.status;
+                document.getElementById("status").innerHTML = "Status: Fetch successful! Status code: " + status;
+                console.log("Fetch successful", status);
+            } catch (error) {
+                document.getElementById("status").innerHTML = "Status: Fetch failed! Error: " + error.message;
+                console.error("Fetch failed", error);
+            }
+        });
+    </script>
+</body>
+</html>
