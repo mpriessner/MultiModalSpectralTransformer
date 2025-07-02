@@ -242,7 +242,7 @@
                     <h2>Simulate data</h2>
                     <div class="form-group">
                         <label for="SMILES_pathInput">SMILES path<i class="fas fa-info-circle info-icon" data-toggle="tooltip" title="Path to the CSV file containing SMILES strings for molecules to be simulated. The file should have a 'SMILES' column and a 'sample-id' column."></i></label>
-                        <input id="SMILES_pathInput" name="SMILES_pathInput" type="text" placeholder="Enter SMILES path" value="/projects/cc/knlr326/1_NMR_project/2_Notebooks/MultiModalTransformer/MMT_website/Runfolder/CSV_files/test_files/ML_NMR_1H_combined_ZINC_test_10.csv">
+                        <input id="SMILES_pathInput" name="SMILES_pathInput" type="text" placeholder="Enter SMILES path" value="/projects/cc/se_users/knlr326/1_NMR_project/2_Notebooks/MultiModalSpectralTransformer_cleaned/MMST_website/Runfolder/CSV_files/molecules_csv.csv">
                     </div>
                     <button class="btn btn-primary" id="simulate_button">Simulate</button>
                     <div id="molecule_image_container">
@@ -694,29 +694,45 @@
 
             function plotNMR(nmrType, index) {
                 index = index || 0;  // Default to 0 if index is undefined
+                console.log(`Starting plotNMR function - Type: ${nmrType}, Index: ${index}`);
+                
                 return new Promise(function(resolve, reject) {
-                    fetch(`/plot_nmr?nmr_type=${nmrType}&index=${index}`)
+                    const url = `/plot_nmr?nmr_type=${nmrType}&index=${index}`;
+                    console.log(`Fetching NMR data from: ${url}`);
+                    
+                    fetch(url)
                         .then(response => {
+                            console.log(`NMR plot response received - Status: ${response.status}, OK: ${response.ok}`);
                             if (!response.ok) {
+                                console.error(`Error response from plot_nmr: ${response.status} ${response.statusText}`);
                                 throw new Error('Network response was not ok');
                             }
                             return response.json();
                         })
                         .then(data => {
-                            console.log('Received data:', data);
+                            console.log('Received NMR data:', data);
                             try {
+                                console.log('Parsing NMR data as JSON');
                                 const plotData = JSON.parse(data);
+                                console.log('Parsed plot data:', plotData);
+                                
+                                console.log('Creating Plotly chart with:');
+                                console.log('- Data:', plotData.data);
+                                console.log('- Layout:', plotData.layout);
+                                
                                 Plotly.newPlot('nmr_plot', plotData.data, plotData.layout);
+                                console.log('Plotly chart created successfully');
                                 resolve();
                             } catch (error) {
-                                console.error('Error parsing plot data:', error);
-                                printToConsole("Error parsing NMR plot data.");
+                                console.error('Error parsing or plotting NMR data:', error);
+                                console.error('Raw data received:', data);
+                                printToConsole(`Error plotting NMR: ${error.message}`);
                                 reject(error);
                             }
                         })
                         .catch(error => {
-                            console.error('Error plotting NMR:', error);
-                            printToConsole("Error plotting NMR spectrum.");
+                            console.error('Error fetching NMR data:', error);
+                            printToConsole(`Failed to fetch NMR data: ${error.message}`);
                             reject(error);
                         });
                 });
