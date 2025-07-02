@@ -92,6 +92,48 @@ def generate_spectral_data_batch(args, smiles_list):
 
 
 def run_IR_simulation(config, args, mode):
+    print("=" * 80)
+    print("Starting IR simulation")
+    print(f"Current working directory: {os.getcwd()}")
+    
+    # Check if the checkpoint directory exists
+    print("Checking IR model checkpoint directory...")
+    if isinstance(args.checkpoint_dir, list):
+        for i, path in enumerate(args.checkpoint_dir):
+            print(f"Checking checkpoint directory {i}: {path}")
+            print(f"Path exists: {os.path.exists(path)}")
+            if os.path.exists(path):
+                print(f"Directory contents: {os.listdir(path)}")
+            else:
+                print(f"CRITICAL ERROR: Checkpoint directory {path} does not exist!")
+                print(f"This directory is required for IR simulation to work.")
+                print(f"Please create the directory structure: models/chemprop-ir/ir_models_data/experiment_model/model_files/")
+                print(f"And populate it with the required model files.")
+                # Create a dummy directory for debugging
+                try:
+                    os.makedirs(path, exist_ok=True)
+                    print(f"Created empty directory: {path}")
+                    print("WARNING: You need to place the IR model files in this directory for simulation to work.")
+                except Exception as e:
+                    print(f"Error creating directory: {e}")
+    else:
+        print(f"Checking checkpoint directory: {args.checkpoint_dir}")
+        print(f"Path exists: {os.path.exists(args.checkpoint_dir)}")
+        if os.path.exists(args.checkpoint_dir):
+            print(f"Directory contents: {os.listdir(args.checkpoint_dir)}")
+        else:
+            print(f"CRITICAL ERROR: Checkpoint directory {args.checkpoint_dir} does not exist!")
+            print(f"This directory is required for IR simulation to work.")
+            print(f"Please create the directory structure: models/chemprop-ir/ir_models_data/experiment_model/model_files/")
+            print(f"And populate it with the required model files.")
+            # Create a dummy directory for debugging
+            try:
+                os.makedirs(args.checkpoint_dir, exist_ok=True)
+                print(f"Created empty directory: {args.checkpoint_dir}")
+                print("WARNING: You need to place the IR model files in this directory for simulation to work.")
+            except Exception as e:
+                print(f"Error creating directory: {e}")
+    
     if mode == "target":
         df = pd.read_csv(config.csv_SMI_targets)
     if mode == "1H":

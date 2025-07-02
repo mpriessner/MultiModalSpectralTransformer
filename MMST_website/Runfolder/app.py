@@ -1294,6 +1294,52 @@ def print_to_console(message):
     print(f"Emitting message: {message}")  # Debug print
     socketio.emit('console_message', {'message': message})
 
+def check_ir_model_directory():
+    """Check if the IR model directory exists and create it if it doesn't."""
+    print("=" * 80)
+    print("Checking IR model directory structure...")
+    
+    # Get the base directory
+    base_dir = os.path.abspath(os.path.join(os.getcwd(), '..', '..'))
+    model_dir = os.path.join(base_dir, 'models', 'chemprop-ir', 'ir_models_data', 'experiment_model', 'model_files')
+    
+    print(f"Base directory: {base_dir}")
+    print(f"Expected IR model directory: {model_dir}")
+    
+    # Check if the directory exists
+    if os.path.exists(model_dir):
+        print(f"IR model directory exists: {model_dir}")
+        # Check if it contains any files
+        files = os.listdir(model_dir)
+        print(f"Files in IR model directory: {files}")
+        if not files:
+            print("WARNING: IR model directory is empty. Model files are required for IR simulation.")
+    else:
+        print(f"IR model directory does not exist: {model_dir}")
+        print("Creating directory structure...")
+        try:
+            os.makedirs(model_dir, exist_ok=True)
+            print(f"Created IR model directory: {model_dir}")
+            print("WARNING: You need to place the IR model files in this directory for simulation to work.")
+        except Exception as e:
+            print(f"Error creating IR model directory: {e}")
+    
+    # Also check the relative path from the current directory
+    relative_model_dir = os.path.join('..', '..', 'models', 'chemprop-ir', 'ir_models_data', 'experiment_model', 'model_files')
+    abs_relative_model_dir = os.path.abspath(relative_model_dir)
+    print(f"Relative model directory path: {relative_model_dir}")
+    print(f"Absolute path of relative directory: {abs_relative_model_dir}")
+    
+    if os.path.exists(relative_model_dir):
+        print(f"Relative IR model directory exists: {relative_model_dir}")
+        files = os.listdir(relative_model_dir)
+        print(f"Files in relative IR model directory: {files}")
+    else:
+        print(f"Relative IR model directory does not exist: {relative_model_dir}")
+    
+    print("=" * 80)
+
 if __name__ == "__main__":
+    check_ir_model_directory()
     socketio.run(app, host='0.0.0.0', debug=True, port=8083)
    # app.run(host='0.0.0.0', port=5000, debug=True)  # Set debug to False in production
