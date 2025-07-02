@@ -242,9 +242,10 @@
                     <h2>Simulate data</h2>
                     <div class="form-group">
                         <label for="SMILES_pathInput">SMILES path<i class="fas fa-info-circle info-icon" data-toggle="tooltip" title="Path to the CSV file containing SMILES strings for molecules to be simulated. The file should have a 'SMILES' column and a 'sample-id' column."></i></label>
-                        <input id="SMILES_pathInput" name="SMILES_pathInput" type="text" placeholder="Enter SMILES path" value="/projects/cc/knlr326/1_NMR_project/2_Notebooks/MultiModalTransformer/MMT_website/Runfolder/CSV_files/test_files/ML_NMR_1H_combined_ZINC_test_10.csv">
+                        <input id="SMILES_pathInput" name="SMILES_pathInput" type="text" placeholder="Enter SMILES path" value="/projects/cc/se_users/knlr326/1_NMR_project/2_Notebooks/MultiModalSpectralTransformer_cleaned/MMST_website/Runfolder/CSV_files/molecules_csv.csv">
                     </div>
                     <button class="btn btn-primary" id="simulate_button">Simulate</button>
+                    <div id="simulate_status" class="mt-2 text-info"></div>
                     <div id="molecule_image_container">
                         <img id="molecule_image" src="" alt="Molecule Image" class="single-molecule-container">
                     </div>
@@ -646,35 +647,64 @@
 
 
             let currentNMRType = '1H';
-
             document.getElementById('simulate_button').addEventListener('click', async function() {
                 var SMILES_Path = document.getElementById('SMILES_pathInput').value;
                 var index = parseInt(document.getElementById('moleculeIndexInput').value) || 0;
-                printToConsole("Simulating...");
+                
+                // Update status
+                const statusDiv = document.getElementById('simulate_status');
+                statusDiv.innerHTML = "Starting simulation...";
+                printToConsole("Starting simulation with SMILES path: " + SMILES_Path);
+                console.log("Starting simulation with SMILES path:", SMILES_Path);
                 
                 try {
                     // Show loading indicator
                     document.getElementById('simulate_button').disabled = true;
                     document.getElementById('simulate_button').innerHTML = 'Simulating...';
-
-                    const response = await fetch(`/simulate/${SMILES_Path}`);
-
-                    if (!response.ok) {
-                        const errorData = await response.json();
-                        throw new Error(errorData.error || `Server responded with status: ${response.status}`);
+                    
+                    statusDiv.innerHTML = "Sending request to server...";
+                    printToConsole("Sending request to server...");
+                    
+                    // Use fetch with URL encoding for the path
+                    const response = await fetch(`/simulate/${encodeURIComponent(SMILES_Path)}`);
+                    console.log("Response status:", response.status);
+                    printToConsole("Response status: " + response.status);
+                    
+                    let responseText;
+                    try {
+                        responseText = await response.text();
+                        console.log("Response text:", responseText);
+                        printToConsole("Response text: " + responseText);
+                    } catch (e) {
+                        console.log("No response text available");
+                        printToConsole("No response text available");
                     }
-
+                    
+                    if (!response.ok) {
+                        let errorMessage = "Server error: " + response.status;
+                        try {
+                            // Try to parse as JSON if possible
+                            const errorData = JSON.parse(responseText);
+                            errorMessage = errorData.error || errorMessage;
+                        } catch (e) {
+                            // If not JSON, use the raw text
+                            if (responseText) errorMessage = responseText;
+                        }
+                        throw new Error(errorMessage);
+                    }
+                    
+                    statusDiv.innerHTML = "Simulation completed successfully!";
                     printToConsole("Simulation completed successfully!");
-                    console.log("Simulation request sent successfully.");
-
+                    
                     await plotNMR(currentNMRType, index);
-
+                    
                     const imageResponse = await fetch(`/molecule_image/${index}`);
                     const blob = await imageResponse.blob();
                     const imageUrl = URL.createObjectURL(blob);
                     document.getElementById('molecule_image').src = imageUrl;
                 } catch (error) {
                     console.error('Error:', error);
+                    statusDiv.innerHTML = `Error: ${error.message}`;
                     printToConsole(`Error occurred during simulation: ${error.message}`);
                     alert(`Simulation failed: ${error.message}`);
                 } finally {

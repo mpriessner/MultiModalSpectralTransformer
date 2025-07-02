@@ -250,29 +250,46 @@ def get_path(config, spectrum_type):
 @app.route('/simulate/<path:SMILES_Path>', methods=['GET'])
 def simulate(SMILES_Path):
     try:
-        print_to_console("Function simulate: Start of Simulation")
-        print(f"SMILES_Path: {SMILES_Path}")
+        print("=" * 50)
+        print("SIMULATE ROUTE CALLED")
+        print(f"Raw SMILES_Path: {SMILES_Path}")
+        
+        # URL decode the path if needed
+        SMILES_Path = urllib.parse.unquote(SMILES_Path)
+        print(f"URL decoded SMILES_Path: {SMILES_Path}")
+        
+        print_to_console(f"Function simulate: Start of Simulation with path: {SMILES_Path}")
         
         # Check if the SMILES file exists
         if not os.path.exists(SMILES_Path):
             error_msg = f"SMILES file not found at path: {SMILES_Path}"
-            print_to_console(error_msg)
-            print(error_msg)
+            print("ERROR: " + error_msg)
+            print_to_console("ERROR: " + error_msg)
             return jsonify({"error": error_msg}), 404
             
+        print(f"File exists: {SMILES_Path}")
+        print_to_console(f"File exists: {SMILES_Path}")
+        
         IR_config, config = load_configs()
+        print("Configs loaded successfully")
+        
         config.simulated = True
-        config.SGNN_csv_gen_smi = "/" + SMILES_Path
+        config.SGNN_csv_gen_smi = SMILES_Path  # Remove the leading slash
+        print(f"Set config.SGNN_csv_gen_smi to: {config.SGNN_csv_gen_smi}")
+        
         save_updated_config(config, config.config_path)
+        print("Config saved successfully")
         
         try:
+            print("Calling sim_and_display function...")
             config = sim_and_display()  # Actual simulation call
+            print("sim_and_display completed successfully")
             print_to_console("Function simulate: Simulation Succeeded")
             return '', 204
         except Exception as e:
             error_msg = f"Error during simulation: {str(e)}"
-            print_to_console(error_msg)
-            print(error_msg)
+            print("ERROR: " + error_msg)
+            print_to_console("ERROR: " + error_msg)
             import traceback
             traceback_str = traceback.format_exc()
             print(traceback_str)
@@ -281,8 +298,8 @@ def simulate(SMILES_Path):
             
     except Exception as e:
         error_msg = f"Error in simulate route: {str(e)}"
-        print_to_console(error_msg)
-        print(error_msg)
+        print("ERROR: " + error_msg)
+        print_to_console("ERROR: " + error_msg)
         import traceback
         traceback_str = traceback.format_exc()
         print(traceback_str)
@@ -374,8 +391,6 @@ def plot_nmr():
             elif nmr_type == 'IR':
                 wave_lengths = IR_data.get('wave_lengths')
                 absorbance = IR_data.get('absorbance')
-            else:
-                ppm = nmr_data
         except TypeError as e:
             print(f"Error extracting NMR data for {nmr_type}: {e}")
             return "Invalid NMR data format", 500

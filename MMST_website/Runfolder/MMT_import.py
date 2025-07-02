@@ -203,7 +203,8 @@ def plot_first_smiles(csv_path):
     img.show()
 
 def sim_and_display():
-    print("sim_and_display")
+    print("="*50)
+    print("sim_and_display function called")
     try:
         print("Loading dictionaries...")
         itos, stoi, stoi_MF, itos_MF = load_json_dics()
@@ -211,19 +212,54 @@ def sim_and_display():
         IR_config, config = load_configs()
         
         print(f"SGNN_csv_gen_smi path: {config.SGNN_csv_gen_smi}")
-        config.csv_SMI_targets = config.SGNN_csv_gen_smi #smi_file_path
+        
+        # Ensure the path doesn't have a leading slash when checking file existence
+        csv_path = config.SGNN_csv_gen_smi
+        if csv_path.startswith('/'):
+            csv_path = csv_path[1:]
+            
+        config.csv_SMI_targets = config.SGNN_csv_gen_smi
         
         # Check if the file exists
-        if not os.path.exists(config.csv_SMI_targets.lstrip('/')):
-            print(f"ERROR: File not found at path: {config.csv_SMI_targets}")
-            raise FileNotFoundError(f"File not found at path: {config.csv_SMI_targets}")
+        print(f"Checking if file exists: {csv_path}")
+        if not os.path.exists(csv_path):
+            print(f"ERROR: File not found at path: {csv_path}")
+            raise FileNotFoundError(f"File not found at path: {csv_path}")
+        else:
+            print(f"File exists: {csv_path}")
+            
+        # Check if the file is readable
+        try:
+            with open(csv_path, 'r') as f:
+                first_line = f.readline()
+                print(f"First line of CSV: {first_line}")
+        except Exception as e:
+            print(f"ERROR reading file: {str(e)}")
+            raise
             
         print("Cleaning dataset...")
         config = ex.clean_dataset(config)
+        print("Dataset cleaned successfully")
+        
         print("\033[1m\033[31mThis is: simulate_syn_data\033[0m")
         
         print("Generating simulated data...")
+        print(f"IR_config checkpoint_dir: {IR_config.checkpoint_dir}")
+        print(f"IR_config test_path: {IR_config.test_path}")
+        print(f"IR_config preds_path: {IR_config.preds_path}")
+        
+        # Check if IR model files exist
+        if not os.path.exists(IR_config.checkpoint_dir):
+            print(f"WARNING: IR checkpoint directory not found: {IR_config.checkpoint_dir}")
+        else:
+            print(f"IR checkpoint directory exists: {IR_config.checkpoint_dir}")
+            # List files in the directory
+            print("Files in checkpoint directory:")
+            for file in os.listdir(IR_config.checkpoint_dir):
+                print(f"  - {file}")
+        
         config = ex.gen_sim_aug_data(config, IR_config) 
+        print("Simulated data generated successfully")
 
         print("Setting display paths...")
         config.csv_1H_path_display = config.csv_1H_path_SGNN
@@ -238,16 +274,14 @@ def sim_and_display():
         print(f"COSY path: {config.csv_COSY_path_display}")
         print(f"IR folder: {config.IR_data_folder_display}")
         
-        ##########################################################
-        ### this is where you can get the spectra for plotting ###
-        ##########################################################
-        #plot_first_smiles(config.csv_1H_path_SGNN)
         print("Saving updated config...")
         save_updated_config(config, config.config_path)
         print("sim_and_display completed successfully")
+        print("="*50)
         return config
     except Exception as e:
         print(f"ERROR in sim_and_display: {str(e)}")
         import traceback
         print(traceback.format_exc())
+        print("="*50)
         raise
