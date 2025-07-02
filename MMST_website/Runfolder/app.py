@@ -1279,6 +1279,10 @@ def plot_dual_NMR():
         logger.error(f"Error in plot_dual_spectra: {e}")
         return jsonify({"error": "An unexpected error occurred"}), 500
 
+@app.route('/test')
+def test_js():
+    return render_template('test_js.html')
+
 @socketio.on('connect')
 def handle_connect():
     print('Client connected')
