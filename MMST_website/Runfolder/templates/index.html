@@ -439,7 +439,7 @@
                         Enter molecule index to compare
                         <i class="fas fa-info-circle info-icon" data-toggle="tooltip" title="Index of the molecule you want to display and compare. This should be a number corresponding to the position of the molecule in your dataset."></i>
                     </label>
-                    <input type="number" id="moleculeindex_numberInput" name="moleculeindex_numberInput" value="0">>   
+                    <input type="number" id="moleculeindex_numberInput" name="moleculeindex_numberInput" value="0">
                 </div>
                 <button class="btn btn-primary" id="loadcompare_executeButton" > Load </button>
                 <div id="molecule-containers-wrapper">
@@ -648,8 +648,13 @@
             let currentNMRType = '1H';
 
             document.getElementById('simulate_button').addEventListener('click', async function() {
+                console.log("SIMULATE BUTTON CLICKED - INITIAL TEST");
                 var SMILES_Path = document.getElementById('SMILES_pathInput').value;
                 var index = parseInt(document.getElementById('moleculeIndexInput').value) || 0;
+                
+                console.log("SMILES Path:", SMILES_Path);
+                console.log("Molecule Index:", index);
+                
                 printToConsole("Simulating...");
                 
                 try {
