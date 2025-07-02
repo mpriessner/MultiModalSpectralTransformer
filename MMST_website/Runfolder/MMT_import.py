@@ -1,4 +1,3 @@
-
 # Standard library imports
 import json
 import os
@@ -50,7 +49,7 @@ if project_root not in sys.path:
     sys.path.append(project_root)
 # Chemprop imports
 #sys.path.append("/projects/cc/knlr326/1_NMR_project/2_Notebooks/nmr_project/1_Dataexploration/2_paper_code/Experiments_SLURM/20.0_SLURM_MasterTransformer/chemprop-IR")
-chemprop_ir_path = os.path.join(project_root, 'chemprop_IR')
+chemprop_ir_path = os.path.join(project_root, 'models', 'chemprop-ir')
 
 if chemprop_ir_path not in sys.path:
     sys.path.append(chemprop_ir_path)
