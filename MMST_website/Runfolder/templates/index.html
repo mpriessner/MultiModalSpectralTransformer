@@ -653,26 +653,36 @@
                 printToConsole("Simulating...");
                 
                 try {
-                    const response = await $.ajax({
-                        url: `/simulate/${SMILES_Path}`,
-                        type: 'GET',
-                    });
-                    console.log("Request sent successfully.");
-                    
+                    // Show loading indicator
+                    document.getElementById('simulate_button').disabled = true;
+                    document.getElementById('simulate_button').innerHTML = 'Simulating...';
+
+                    const response = await fetch(`/simulate/${SMILES_Path}`);
+
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        throw new Error(errorData.error || `Server responded with status: ${response.status}`);
+                    }
+
+                    printToConsole("Simulation completed successfully!");
+                    console.log("Simulation request sent successfully.");
+
                     await plotNMR(currentNMRType, index);
-                    
+
                     const imageResponse = await fetch(`/molecule_image/${index}`);
                     const blob = await imageResponse.blob();
                     const imageUrl = URL.createObjectURL(blob);
                     document.getElementById('molecule_image').src = imageUrl;
                 } catch (error) {
                     console.error('Error:', error);
-                    printToConsole("Error occurred during simulation.");
+                    printToConsole(`Error occurred during simulation: ${error.message}`);
+                    alert(`Simulation failed: ${error.message}`);
+                } finally {
+                    // Reset button state
+                    document.getElementById('simulate_button').disabled = false;
+                    document.getElementById('simulate_button').innerHTML = 'Simulate';
                 }
             });
-
-
-
 
             // Add event listeners for NMR type buttons
             document.querySelectorAll('.nmr-type-btn').forEach(button => {

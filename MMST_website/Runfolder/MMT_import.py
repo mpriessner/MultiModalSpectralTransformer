@@ -204,24 +204,50 @@ def plot_first_smiles(csv_path):
 
 def sim_and_display():
     print("sim_and_display")
-    #import IPython; IPython.embed();
+    try:
+        print("Loading dictionaries...")
+        itos, stoi, stoi_MF, itos_MF = load_json_dics()
+        print("Loading configs...")
+        IR_config, config = load_configs()
+        
+        print(f"SGNN_csv_gen_smi path: {config.SGNN_csv_gen_smi}")
+        config.csv_SMI_targets = config.SGNN_csv_gen_smi #smi_file_path
+        
+        # Check if the file exists
+        if not os.path.exists(config.csv_SMI_targets.lstrip('/')):
+            print(f"ERROR: File not found at path: {config.csv_SMI_targets}")
+            raise FileNotFoundError(f"File not found at path: {config.csv_SMI_targets}")
+            
+        print("Cleaning dataset...")
+        config = ex.clean_dataset(config)
+        print("\033[1m\033[31mThis is: simulate_syn_data\033[0m")
+        
+        print("Generating simulated data...")
+        config = ex.gen_sim_aug_data(config, IR_config) 
 
-    itos, stoi, stoi_MF, itos_MF = load_json_dics()
-    IR_config, config = load_configs()
-    config.csv_SMI_targets = config.SGNN_csv_gen_smi #smi_file_path
-    #config.SGNN_csv_gen_smi =  config["SGNN_csv_gen_smi"] #smi_file_path
-    config = ex.clean_dataset(config)
-    print("\033[1m\033[31mThis is: simulate_syn_data\033[0m")
-    config = ex.gen_sim_aug_data(config, IR_config) 
-
-    config.csv_1H_path_display = config.csv_1H_path_SGNN
-    config.csv_13C_path_display = config.csv_13C_path_SGNN
-    config.csv_HSQC_path_display = config.csv_HSQC_path_SGNN
-    config.csv_COSY_path_display = config.csv_COSY_path_SGNN
-    config.IR_data_folder_display = config.IR_data_folder
-    ##########################################################
-    ### this is where you can get the spectra for plotting ###
-    ##########################################################
-    #plot_first_smiles(config.csv_1H_path_SGNN)
-    save_updated_config(config, config.config_path)
-    return config
+        print("Setting display paths...")
+        config.csv_1H_path_display = config.csv_1H_path_SGNN
+        config.csv_13C_path_display = config.csv_13C_path_SGNN
+        config.csv_HSQC_path_display = config.csv_HSQC_path_SGNN
+        config.csv_COSY_path_display = config.csv_COSY_path_SGNN
+        config.IR_data_folder_display = config.IR_data_folder
+        
+        print(f"1H path: {config.csv_1H_path_display}")
+        print(f"13C path: {config.csv_13C_path_display}")
+        print(f"HSQC path: {config.csv_HSQC_path_display}")
+        print(f"COSY path: {config.csv_COSY_path_display}")
+        print(f"IR folder: {config.IR_data_folder_display}")
+        
+        ##########################################################
+        ### this is where you can get the spectra for plotting ###
+        ##########################################################
+        #plot_first_smiles(config.csv_1H_path_SGNN)
+        print("Saving updated config...")
+        save_updated_config(config, config.config_path)
+        print("sim_and_display completed successfully")
+        return config
+    except Exception as e:
+        print(f"ERROR in sim_and_display: {str(e)}")
+        import traceback
+        print(traceback.format_exc())
+        raise

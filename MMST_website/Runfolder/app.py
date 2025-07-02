@@ -251,37 +251,43 @@ def get_path(config, spectrum_type):
 def simulate(SMILES_Path):
     try:
         print_to_console("Function simulate: Start of Simulation")
+        print(f"SMILES_Path: {SMILES_Path}")
+        
+        # Check if the SMILES file exists
+        if not os.path.exists(SMILES_Path):
+            error_msg = f"SMILES file not found at path: {SMILES_Path}"
+            print_to_console(error_msg)
+            print(error_msg)
+            return jsonify({"error": error_msg}), 404
+            
         IR_config, config = load_configs()
         config.simulated = True
-        config.SGNN_csv_gen_smi = "/"+ SMILES_Path
+        config.SGNN_csv_gen_smi = "/" + SMILES_Path
         save_updated_config(config, config.config_path)
-        config = sim_and_display() ### UNCOMMENT FOR ACTUALLY TESTING THE CODE
-        ### just for testing the code
-        # config.csv_1H_path_display = "/projects/cc/knlr326/1_NMR_project/1_NMR_data_AZ/24_SGNN_gen_folder_2/data_1H_265916.csv"
-        # config.csv_13C_path_display = "/projects/cc/knlr326/1_NMR_project/1_NMR_data_AZ/24_SGNN_gen_folder_2/data_13C_265916.csv"
-        # config.csv_HSQC_path_display = "/projects/cc/knlr326/1_NMR_project/1_NMR_data_AZ/24_SGNN_gen_folder_2/data_COSY_265916.csv"
-        # config.csv_COSY_path_display = "/projects/cc/knlr326/1_NMR_project/1_NMR_data_AZ/24_SGNN_gen_folder_2/data_HSQC_265916.csv"
-        # config.IR_data_folder_display = "/projects/cc/knlr326/1_NMR_project/1_NMR_data_AZ/24_SGNN_gen_folder_2/dump_2_265916_265916_265916_265916_265916"
-        ##########################################################
-        ### this is where you can get the spectra for plotting ###
-        ##########################################################
-        #plot_first_smiles(config.csv_1H_path_SGNN)
-        print(config.csv_1H_path_display)
-        print(config.csv_13C_path_display)
-        print(config.csv_HSQC_path_display)
-        print(config.csv_COSY_path_display)
-        print(config.IR_data_folder_display)
-        config.SGNN_csv_gen_smi = config.csv_1H_path_display
-        save_updated_config(config, config.config_path)
-        print_to_console("Function simulate: Simulation Succeeded")
-        print("Succeeded")
-        #import IPython; IPython.embed();
-
-        return '', 204  # No content to return, but the request was successful
+        
+        try:
+            config = sim_and_display()  # Actual simulation call
+            print_to_console("Function simulate: Simulation Succeeded")
+            return '', 204
+        except Exception as e:
+            error_msg = f"Error during simulation: {str(e)}"
+            print_to_console(error_msg)
+            print(error_msg)
+            import traceback
+            traceback_str = traceback.format_exc()
+            print(traceback_str)
+            print_to_console(traceback_str)
+            return jsonify({"error": error_msg, "traceback": traceback_str}), 500
+            
     except Exception as e:
-        logger.error("Error test: %s", e)
-        return str(e), 500  # Return the error message with a 500 status code
-
+        error_msg = f"Error in simulate route: {str(e)}"
+        print_to_console(error_msg)
+        print(error_msg)
+        import traceback
+        traceback_str = traceback.format_exc()
+        print(traceback_str)
+        print_to_console(traceback_str)
+        return jsonify({"error": error_msg, "traceback": traceback_str}), 500
 
 
 @app.route('/plot_nmr')
@@ -1145,8 +1151,7 @@ def plot_dual_NMR():
 
             if IR_df.shape[1] != 1:
                 logger.error(f"Invalid column count for IR data in {IR_csv_path}")
-                return jsonify({"error": "Invalid IR data format"}), 400
-
+                return
             absorbance = IR_df.iloc[:, 0].astype(float).tolist()
             wave_numbers = np.linspace(400, 4000, len(absorbance))
             IR_exp_data = {'wave_lengths': wave_numbers, 'absorbance': absorbance}
@@ -1274,4 +1279,3 @@ def print_to_console(message):
 if __name__ == "__main__":
     socketio.run(app, host='0.0.0.0', debug=True, port=8083)
    # app.run(host='0.0.0.0', port=5000, debug=True)  # Set debug to False in production
-
