@@ -252,17 +252,46 @@ def simulate(SMILES_Path):
     try:
         print("=" * 50)
         print_to_console("Function simulate: Start of Simulation")
-        print(f"SMILES_Path received: {SMILES_Path}")
+        print(f"Original SMILES_Path received: {SMILES_Path}")
         print(f"Current working directory: {os.getcwd()}")
         
-        # Check if the SMILES file exists
+        # Path handling logic - handle both absolute and relative paths
+        if SMILES_Path.startswith('/'):
+            # If it's an absolute path, remove the leading slash
+            print("Detected absolute path (starts with /), removing leading slash")
+            SMILES_Path = SMILES_Path[1:]
+        
+        # Check if the SMILES file exists at the provided path
         print(f"Checking if file exists at: {SMILES_Path}")
         if not os.path.exists(SMILES_Path):
-            error_msg = f"SMILES file not found at path: {SMILES_Path}"
-            print_to_console(error_msg)
-            print(error_msg)
-            print(f"Attempted absolute path: {os.path.abspath(SMILES_Path)}")
-            return jsonify({"error": error_msg}), 404
+            # Try alternative paths
+            print("File not found at original path, trying alternatives...")
+            
+            # Try with CSV_files/ prefix as a fallback
+            alternative_path = os.path.join('CSV_files', os.path.basename(SMILES_Path))
+            print(f"Trying alternative path: {alternative_path}")
+            
+            if os.path.exists(alternative_path):
+                SMILES_Path = alternative_path
+                print(f"File found at alternative path: {SMILES_Path}")
+            else:
+                # Try with just the filename
+                filename = os.path.basename(SMILES_Path)
+                print(f"Trying with just filename: {filename}")
+                
+                if os.path.exists(filename):
+                    SMILES_Path = filename
+                    print(f"File found with just filename: {SMILES_Path}")
+                else:
+                    error_msg = f"SMILES file not found at path: {SMILES_Path}"
+                    print_to_console(error_msg)
+                    print(error_msg)
+                    print(f"Attempted paths:")
+                    print(f"  - Original: {SMILES_Path}")
+                    print(f"  - With CSV_files prefix: {alternative_path}")
+                    print(f"  - Just filename: {filename}")
+                    print(f"  - Absolute path: {os.path.abspath(SMILES_Path)}")
+                    return jsonify({"error": error_msg}), 404
         else:
             print(f"File found at path: {SMILES_Path}")
             
@@ -272,7 +301,8 @@ def simulate(SMILES_Path):
         
         print("Setting simulated flag and SMILES path in config")
         config.simulated = True
-        config.SGNN_csv_gen_smi = "/" + SMILES_Path
+        # Ensure SGNN_csv_gen_smi has a leading slash but avoid double slashes
+        config.SGNN_csv_gen_smi = "/" + SMILES_Path.lstrip('/')
         print(f"Updated SGNN_csv_gen_smi: {config.SGNN_csv_gen_smi}")
         
         print("Saving updated config")
