@@ -662,7 +662,7 @@
                     document.getElementById('simulate_button').disabled = true;
                     document.getElementById('simulate_button').innerHTML = 'Simulating...';
 
-                    const response = await fetch(`/simulate/${SMILES_Path}`);
+                    const response = await fetch(`/simulate/${encodeURIComponent(SMILES_Path)}`);
 
                     if (!response.ok) {
                         const errorData = await response.json();
@@ -1065,7 +1065,7 @@
 
             document.addEventListener('DOMContentLoaded', function () {
             document.getElementById('molecule_image').src = '';
-            
+            });
        
         </script>
     </body>
