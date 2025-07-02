@@ -675,12 +675,9 @@
             });
 
             // Call initConsole when the DOM is loaded
-            document.addEventListener('DOMContentLoaded', initConsole);
-
-                document.addEventListener('DOMContentLoaded', () => {
+            document.addEventListener('DOMContentLoaded', function() {
                 initConsole();
                 $('[data-toggle="tooltip"]').tooltip();
-
             });
             // ^^^------------------ Console ----------------------^^^
 
