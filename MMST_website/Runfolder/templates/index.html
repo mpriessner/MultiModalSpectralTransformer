@@ -254,6 +254,23 @@
                     simulateButton.onclick = function() {
                         console.log("Simulate button clicked");
                         addVisibleMessage("Simulate button clicked!");
+                        
+                        // Now manually trigger the fetch request
+                        const SMILES_Path = document.getElementById('SMILES_pathInput').value;
+                        fetch(`/simulate/${encodeURIComponent(SMILES_Path)}`)
+                            .then(response => {
+                                console.log("Response received:", response.status);
+                                addVisibleMessage("Response received: " + response.status);
+                                return response.text();
+                            })
+                            .then(data => {
+                                console.log("Data received:", data);
+                                addVisibleMessage("Simulation complete!");
+                            })
+                            .catch(error => {
+                                console.error("Error:", error);
+                                addVisibleMessage("Error: " + error.message);
+                            });
                     };
                 } else {
                     console.error("Simulate button not found");
