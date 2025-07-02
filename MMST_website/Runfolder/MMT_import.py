@@ -216,14 +216,24 @@ def sim_and_display():
         print(f"SGNN_csv_gen_smi path: {config.SGNN_csv_gen_smi}")
         config.csv_SMI_targets = config.SGNN_csv_gen_smi #smi_file_path
         
-        # Check if the file exists
-        file_path = config.csv_SMI_targets.lstrip('/')
+        # Check if the file exists - properly handle absolute paths
+        file_path = config.csv_SMI_targets
         print(f"Checking if file exists at: {file_path}")
-        if not os.path.exists(file_path):
-            print(f"ERROR: File not found at path: {file_path}")
-            print(f"Current working directory: {os.getcwd()}")
-            print(f"Absolute path attempt: {os.path.abspath(file_path)}")
-            raise FileNotFoundError(f"File not found at path: {file_path}")
+        if not os.path.isfile(file_path):
+            # Try without leading slash as fallback
+            alt_path = file_path.lstrip('/')
+            print(f"File not found, trying without leading slash: {alt_path}")
+            
+            if os.path.isfile(alt_path):
+                print(f"File found at alternative path: {alt_path}")
+                # Update the path to the working one
+                file_path = alt_path
+                config.csv_SMI_targets = alt_path
+            else:
+                print(f"ERROR: File not found at path: {file_path}")
+                print(f"Current working directory: {os.getcwd()}")
+                print(f"Absolute path attempt: {os.path.abspath(file_path)}")
+                raise FileNotFoundError(f"File not found at path: {file_path}")
         else:
             print(f"File found at path: {file_path}")
             
