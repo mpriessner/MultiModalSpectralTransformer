@@ -393,7 +393,8 @@ def plot_nmr():
                 wave_lengths = IR_data.get('wave_lengths')
                 absorbance = IR_data.get('absorbance')
             else:
-                ppm = nmr_data        except TypeError as e:
+                ppm = nmr_data        
+        except TypeError as e:
             print(f"Error extracting NMR data for {nmr_type}: {e}")
             return "Invalid NMR data format", 500
         print_to_console("NMR Plot: Extraction of datapoints successful")
