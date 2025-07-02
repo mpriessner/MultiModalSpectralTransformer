@@ -203,27 +203,48 @@ def plot_first_smiles(csv_path):
     img.show()
 
 def sim_and_display():
-    print("sim_and_display")
+    print("sim_and_display - START")
     try:
         print("Loading dictionaries...")
         itos, stoi, stoi_MF, itos_MF = load_json_dics()
+        print("Dictionaries loaded successfully")
+        
         print("Loading configs...")
         IR_config, config = load_configs()
+        print(f"Configs loaded successfully. IR config: {IR_config is not None}, Main config: {config is not None}")
         
         print(f"SGNN_csv_gen_smi path: {config.SGNN_csv_gen_smi}")
         config.csv_SMI_targets = config.SGNN_csv_gen_smi #smi_file_path
         
         # Check if the file exists
-        if not os.path.exists(config.csv_SMI_targets.lstrip('/')):
-            print(f"ERROR: File not found at path: {config.csv_SMI_targets}")
-            raise FileNotFoundError(f"File not found at path: {config.csv_SMI_targets}")
+        file_path = config.csv_SMI_targets.lstrip('/')
+        print(f"Checking if file exists at: {file_path}")
+        if not os.path.exists(file_path):
+            print(f"ERROR: File not found at path: {file_path}")
+            print(f"Current working directory: {os.getcwd()}")
+            print(f"Absolute path attempt: {os.path.abspath(file_path)}")
+            raise FileNotFoundError(f"File not found at path: {file_path}")
+        else:
+            print(f"File found at path: {file_path}")
             
         print("Cleaning dataset...")
         config = ex.clean_dataset(config)
+        print("Dataset cleaned successfully")
         print("\033[1m\033[31mThis is: simulate_syn_data\033[0m")
         
         print("Generating simulated data...")
-        config = ex.gen_sim_aug_data(config, IR_config) 
+        print(f"Before gen_sim_aug_data - IR_config checkpoint_dir: {IR_config.checkpoint_dir}")
+        print(f"Current working directory: {os.getcwd()}")
+        print(f"Checking if IR model directory exists: {os.path.exists(IR_config.checkpoint_dir[0] if isinstance(IR_config.checkpoint_dir, list) else IR_config.checkpoint_dir)}")
+        
+        try:
+            config = ex.gen_sim_aug_data(config, IR_config)
+            print("Simulated data generated successfully") 
+        except Exception as e:
+            print(f"ERROR in gen_sim_aug_data: {str(e)}")
+            import traceback
+            print(traceback.format_exc())
+            raise
 
         print("Setting display paths...")
         config.csv_1H_path_display = config.csv_1H_path_SGNN

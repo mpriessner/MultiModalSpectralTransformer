@@ -15,6 +15,12 @@ from sklearn.utils import shuffle
 from argparse import Namespace
 import random
 import glob
+import os
+import pandas as pd
+import random
+from rdkit import Chem
+import copy
+import tqdm
 
 
 def parse_arguments(hyperparameters):
@@ -91,7 +97,7 @@ def SMI_generation_MF(config, stoi, stoi_MF, itos, itos_MF):
     #print(combined_df)
     # Generating the dictionary
     results_dict_MF = {}
-    for column in tqdm(combined_df.columns):
+    for column in tqdm.tqdm(combined_df.columns):
         results_dict_MF[combined_df[column][0]] = combined_df[column][1:].tolist()
 
     # combined_list_MF, html_TSNE, html_UMAP, html_PCA = cv.plot_cluster_MF(results_dict_MF, config, mode, stoi, stoi_MF, itos, itos_MF)
@@ -103,24 +109,71 @@ def SMI_generation_MF(config, stoi, stoi_MF, itos, itos_MF):
 
 import copy
 def gen_sim_aug_data(config, IR_config):
+    print("=" * 50)
+    print("Starting gen_sim_aug_data function")
+    print(f"Current working directory: {os.getcwd()}")
 
     ran_num = random.randint(100000, 999999)
     config.ran_num = ran_num
-    print("outside ran_num")
-    print(ran_num)
+    print(f"Generated random number: {ran_num}")
     config.SGNN_gen_folder_path_backup = config.SGNN_gen_folder_path
+    print(f"SGNN_gen_folder_path_backup: {config.SGNN_gen_folder_path_backup}")
 
     if os.path.exists(config.SGNN_gen_folder_path):
-        print(ran_num)
+        print(f"SGNN_gen_folder_path exists: {config.SGNN_gen_folder_path}")
         path_gen_folder = config.SGNN_gen_folder_path + "_" + str(ran_num)
+        print(f"Creating new folder: {path_gen_folder}")
         os.makedirs(path_gen_folder, exist_ok=True)
         config.SGNN_gen_folder_path = path_gen_folder
+    else:
+        print(f"SGNN_gen_folder_path does not exist: {config.SGNN_gen_folder_path}")
+        print(f"Creating directory: {config.SGNN_gen_folder_path}")
+        os.makedirs(config.SGNN_gen_folder_path, exist_ok=True)
 
-    combined_df, data_1H, data_13C, data_COSY, data_HSQC, csv_1H_path, csv_13C_path, csv_COSY_path, csv_HSQC_path = dg.main_run_data_generation(config)
+    print("Calling main_run_data_generation...")
+    try:
+        combined_df, data_1H, data_13C, data_COSY, data_HSQC, csv_1H_path, csv_13C_path, csv_COSY_path, csv_HSQC_path = dg.main_run_data_generation(config)
+        print("main_run_data_generation completed successfully")
+        print(f"Generated paths - 1H: {csv_1H_path}, 13C: {csv_13C_path}, HSQC: {csv_HSQC_path}, COSY: {csv_COSY_path}")
+    except Exception as e:
+        print(f"ERROR in main_run_data_generation: {str(e)}")
+        import traceback
+        print(traceback.format_exc())
+        raise
 
+    print("Setting up for IR simulation...")
     config.csv_SMI_targets = copy.deepcopy(csv_1H_path) # it should just generate the smiles that has been successfully generated for 1H 
-    data_IR = irs.run_IR_simulation(config, IR_config, "target")
+    print(f"csv_SMI_targets set to: {config.csv_SMI_targets}")
+    
+    print("IR_config details before simulation:")
+    print(f"IR_config.checkpoint_dir: {IR_config.checkpoint_dir}")
+    if isinstance(IR_config.checkpoint_dir, list):
+        for i, path in enumerate(IR_config.checkpoint_dir):
+            print(f"  Checking path {i}: {path}")
+            print(f"  Path exists: {os.path.exists(path)}")
+            if os.path.exists(path):
+                print(f"  Directory contents: {os.listdir(path)}")
+    else:
+        print(f"  Path exists: {os.path.exists(IR_config.checkpoint_dir)}")
+        if os.path.exists(IR_config.checkpoint_dir):
+            print(f"  Directory contents: {os.listdir(IR_config.checkpoint_dir)}")
+    
+    print(f"IR_config.test_path: {IR_config.test_path}")
+    print(f"IR_config.preds_path: {IR_config.preds_path}")
+    
+    print("Starting IR simulation...")
+    try:
+        data_IR = irs.run_IR_simulation(config, IR_config, "target")
+        print(f"IR simulation completed successfully, output: {data_IR}")
+    except Exception as e:
+        print(f"ERROR in IR simulation: {str(e)}")
+        import traceback
+        print(traceback.format_exc())
+        raise
+        
     print("\033[1m\033[33m IR Generation: DONE\033[0m")    
+    
+    print("Setting paths in config...")
     config.csv_1H_path_SGNN = copy.deepcopy(csv_1H_path)
     config.csv_13C_path_SGNN = copy.deepcopy(csv_13C_path) 
     config.csv_HSQC_path_SGNN = copy.deepcopy(csv_HSQC_path)
@@ -130,14 +183,18 @@ def gen_sim_aug_data(config, IR_config):
 
     # in case if I get IR as well
     config.data_size = len(data_1H)
+    print(f"Data size set to: {config.data_size}")
     config.pickle_file_path = ""
     # to make sure that failed molecules get ignored and just the successful
     # generations are processed
     config.csv_path_val = csv_1H_path
     config.SGNN_gen_folder_path = config.SGNN_gen_folder_path_backup
+    print(f"Restored SGNN_gen_folder_path to: {config.SGNN_gen_folder_path}")
     #sort automatic model saving in new folder
     #config.training_mode = "1H_13C_HSQC_COSY_IR_MF_MW"
     #config.execution_type = "transformer_improvement"
+    print("gen_sim_aug_data completed successfully")
+    print("=" * 50)
     return config
 
 

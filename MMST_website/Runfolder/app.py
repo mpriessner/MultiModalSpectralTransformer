@@ -250,24 +250,40 @@ def get_path(config, spectrum_type):
 @app.route('/simulate/<path:SMILES_Path>', methods=['GET'])
 def simulate(SMILES_Path):
     try:
+        print("=" * 50)
         print_to_console("Function simulate: Start of Simulation")
-        print(f"SMILES_Path: {SMILES_Path}")
+        print(f"SMILES_Path received: {SMILES_Path}")
+        print(f"Current working directory: {os.getcwd()}")
         
         # Check if the SMILES file exists
+        print(f"Checking if file exists at: {SMILES_Path}")
         if not os.path.exists(SMILES_Path):
             error_msg = f"SMILES file not found at path: {SMILES_Path}"
             print_to_console(error_msg)
             print(error_msg)
+            print(f"Attempted absolute path: {os.path.abspath(SMILES_Path)}")
             return jsonify({"error": error_msg}), 404
+        else:
+            print(f"File found at path: {SMILES_Path}")
             
+        print("Loading configurations...")
         IR_config, config = load_configs()
+        print(f"Configurations loaded. IR config: {IR_config is not None}, Main config: {config is not None}")
+        
+        print("Setting simulated flag and SMILES path in config")
         config.simulated = True
         config.SGNN_csv_gen_smi = "/" + SMILES_Path
+        print(f"Updated SGNN_csv_gen_smi: {config.SGNN_csv_gen_smi}")
+        
+        print("Saving updated config")
         save_updated_config(config, config.config_path)
+        print("Config saved successfully")
         
         try:
+            print("Calling sim_and_display function...")
             config = sim_and_display()  # Actual simulation call
             print_to_console("Function simulate: Simulation Succeeded")
+            print("=" * 50)
             return '', 204
         except Exception as e:
             error_msg = f"Error during simulation: {str(e)}"
@@ -277,6 +293,7 @@ def simulate(SMILES_Path):
             traceback_str = traceback.format_exc()
             print(traceback_str)
             print_to_console(traceback_str)
+            print("=" * 50)
             return jsonify({"error": error_msg, "traceback": traceback_str}), 500
             
     except Exception as e:
@@ -287,6 +304,7 @@ def simulate(SMILES_Path):
         traceback_str = traceback.format_exc()
         print(traceback_str)
         print_to_console(traceback_str)
+        print("=" * 50)
         return jsonify({"error": error_msg, "traceback": traceback_str}), 500
 
 
@@ -375,8 +393,7 @@ def plot_nmr():
                 wave_lengths = IR_data.get('wave_lengths')
                 absorbance = IR_data.get('absorbance')
             else:
-                ppm = nmr_data
-        except TypeError as e:
+                ppm = nmr_data        except TypeError as e:
             print(f"Error extracting NMR data for {nmr_type}: {e}")
             return "Invalid NMR data format", 500
         print_to_console("NMR Plot: Extraction of datapoints successful")
