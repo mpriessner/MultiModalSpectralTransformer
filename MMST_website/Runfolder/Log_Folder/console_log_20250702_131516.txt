@@ -1,0 +1,11 @@
+2025-07-02 13:15:16.438740: Simulating...
+2025-07-02 13:15:16.438753: Function simulate: Start of Simulation
+2025-07-02 13:15:16.438756: Error occurred during simulation: Error during simulation: File not found at path: projects/cc/se_users/knlr326/1_NMR_project/2_Notebooks/MultiModalSpectralTransformer_cleaned/MMST_website/Runfolder/CSV_files/molecules_csv.csv
+2025-07-02 13:15:16.438759: Error during simulation: File not found at path: projects/cc/se_users/knlr326/1_NMR_project/2_Notebooks/MultiModalSpectralTransformer_cleaned/MMST_website/Runfolder/CSV_files/molecules_csv.csv
+2025-07-02 13:15:16.438762: Traceback (most recent call last):
+  File "/projects/cc/se_users/knlr326/1_NMR_project/2_Notebooks/MultiModalSpectralTransformer_cleaned/MMST_website/Runfolder/app.py", line 317, in simulate
+    config = sim_and_display()  # Actual simulation call
+  File "/projects/cc/se_users/knlr326/1_NMR_project/2_Notebooks/MultiModalSpectralTransformer_cleaned/MMST_website/Runfolder/MMT_import.py", line 226, in sim_and_display
+    raise FileNotFoundError(f"File not found at path: {file_path}")
+FileNotFoundError: File not found at path: projects/cc/se_users/knlr326/1_NMR_project/2_Notebooks/MultiModalSpectralTransformer_cleaned/MMST_website/Runfolder/CSV_files/molecules_csv.csv
+

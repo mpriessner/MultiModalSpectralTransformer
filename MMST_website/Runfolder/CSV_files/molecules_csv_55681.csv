@@ -1,0 +1,9 @@
+sample-id,SMILES
+1,CN1C=NC2=C1C(=O)N(C(=O)N2C)C
+2,CC(=O)Oc1ccccc1C(=O)O
+3,CC(=O)Nc1ccc(O)cc1
+4,C(C1C(C(C(C(O1)O)O)O)O)O
+5,CCO
+6,CCCNC(=O)CNC(=O)c1ccc(N(CC)C(C)C)cc1
+7,O=C(NC1C2CN(C(=O)C3CC3)CC21)C1CCC(C(F)(F)F)C1
+8,C1=CNC2=C1C(=O)C(=N2)C(=O)N

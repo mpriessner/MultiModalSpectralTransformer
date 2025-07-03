@@ -1,0 +1,33 @@
+2025-07-02 12:44:16.999723: Simulating...
+2025-07-02 12:44:16.999735: Function simulate: Start of Simulation
+2025-07-02 12:44:16.999738: SMILES file not found at path: projects/cc/se_users/knlr326/1_NMR_project/2_Notebooks/MultiModalSpectralTransformer_cleaned/MMST_website/Runfolder/CSV_files/molecules_csv.csv
+2025-07-02 12:44:16.999741: Error occurred during simulation: SMILES file not found at path: projects/cc/se_users/knlr326/1_NMR_project/2_Notebooks/MultiModalSpectralTransformer_cleaned/MMST_website/Runfolder/CSV_files/molecules_csv.csv
+2025-07-02 12:44:16.999744: Simulating...
+2025-07-02 12:44:16.999746: Function simulate: Start of Simulation
+2025-07-02 12:44:16.999749: Error during simulation: [Errno 2] No such file or directory: '/CSV_files/molecules_csv.csv'
+2025-07-02 12:44:16.999751: Traceback (most recent call last):
+  File "/projects/cc/se_users/knlr326/1_NMR_project/2_Notebooks/MultiModalSpectralTransformer_cleaned/MMST_website/Runfolder/app.py", line 284, in simulate
+    config = sim_and_display()  # Actual simulation call
+  File "/projects/cc/se_users/knlr326/1_NMR_project/2_Notebooks/MultiModalSpectralTransformer_cleaned/MMST_website/Runfolder/MMT_import.py", line 231, in sim_and_display
+    config = ex.clean_dataset(config)
+  File "/projects/cc/se_users/knlr326/1_NMR_project/2_Notebooks/MultiModalSpectralTransformer_cleaned/utils_MMT/execution_function_v15_4.py", line 341, in clean_dataset
+    df = pd.read_csv(file_path)
+  File "/projects/cc/se_users/knlr326/miniconda_SE/envs/NMR_Structure_Elucidator/lib/python3.7/site-packages/pandas/util/_decorators.py", line 311, in wrapper
+    return func(*args, **kwargs)
+  File "/projects/cc/se_users/knlr326/miniconda_SE/envs/NMR_Structure_Elucidator/lib/python3.7/site-packages/pandas/io/parsers/readers.py", line 586, in read_csv
+    return _read(filepath_or_buffer, kwds)
+  File "/projects/cc/se_users/knlr326/miniconda_SE/envs/NMR_Structure_Elucidator/lib/python3.7/site-packages/pandas/io/parsers/readers.py", line 482, in _read
+    parser = TextFileReader(filepath_or_buffer, **kwds)
+  File "/projects/cc/se_users/knlr326/miniconda_SE/envs/NMR_Structure_Elucidator/lib/python3.7/site-packages/pandas/io/parsers/readers.py", line 811, in __init__
+    self._engine = self._make_engine(self.engine)
+  File "/projects/cc/se_users/knlr326/miniconda_SE/envs/NMR_Structure_Elucidator/lib/python3.7/site-packages/pandas/io/parsers/readers.py", line 1040, in _make_engine
+    return mapping[engine](self.f, **self.options)  # type: ignore[call-arg]
+  File "/projects/cc/se_users/knlr326/miniconda_SE/envs/NMR_Structure_Elucidator/lib/python3.7/site-packages/pandas/io/parsers/c_parser_wrapper.py", line 51, in __init__
+    self._open_handles(src, kwds)
+  File "/projects/cc/se_users/knlr326/miniconda_SE/envs/NMR_Structure_Elucidator/lib/python3.7/site-packages/pandas/io/parsers/base_parser.py", line 229, in _open_handles
+    errors=kwds.get("encoding_errors", "strict"),
+  File "/projects/cc/se_users/knlr326/miniconda_SE/envs/NMR_Structure_Elucidator/lib/python3.7/site-packages/pandas/io/common.py", line 707, in get_handle
+    newline="",
+FileNotFoundError: [Errno 2] No such file or directory: '/CSV_files/molecules_csv.csv'
+
+2025-07-02 12:44:16.999756: Error occurred during simulation: Error during simulation: [Errno 2] No such file or directory: '/CSV_files/molecules_csv.csv'

@@ -1,0 +1,43 @@
+2025-07-02 14:06:37.841783: Simulating...
+2025-07-02 14:06:37.841795: Function simulate: Start of Simulation
+2025-07-02 14:06:37.841798: Function simulate: Simulation Succeeded
+2025-07-02 14:06:37.841800: Simulation completed successfully!
+2025-07-02 14:06:37.841803: NMR Plot: Run Plot_NMR
+2025-07-02 14:06:37.841806: NMR Plot: Loading data successful
+2025-07-02 14:06:37.841808: NMR Plot: Plot_NMR 3
+2025-07-02 14:06:37.841811: NMR Plot: Extraction of datapoints successful
+2025-07-02 14:06:37.841814: NMR Plot: Plotting of Spectrum successful
+2025-07-02 14:06:37.841821: NMR Plot: Run Plot_NMR
+2025-07-02 14:06:37.841824: NMR Plot: Loading data successful
+2025-07-02 14:06:37.841827: NMR Plot: Plot_NMR 3
+2025-07-02 14:06:37.841829: NMR Plot: Extraction of datapoints successful
+2025-07-02 14:06:37.841832: NMR Plot: Plotting of Spectrum successful
+2025-07-02 14:06:37.841834: NMR Plot: Run Plot_NMR
+2025-07-02 14:06:37.841837: NMR Plot: Loading data successful
+2025-07-02 14:06:37.841840: NMR Plot: Plot_NMR 3
+2025-07-02 14:06:37.841842: NMR Plot: Extraction of datapoints successful
+2025-07-02 14:06:37.841845: NMR Plot: Plotting of Spectrum successful
+2025-07-02 14:06:37.841847: NMR Plot: Run Plot_NMR
+2025-07-02 14:06:37.841850: NMR Plot: Loading data successful
+2025-07-02 14:06:37.841852: NMR Plot: Plot_NMR 3
+2025-07-02 14:06:37.841855: NMR Plot: Extraction of datapoints successful
+2025-07-02 14:06:37.841857: NMR Plot: Plotting of Spectrum successful
+2025-07-02 14:06:37.841860: NMR Plot: Run Plot_NMR
+2025-07-02 14:06:37.841862: NMR Plot: Loading data successful
+2025-07-02 14:06:37.841865: NMR Plot: Plot_NMR 3
+2025-07-02 14:06:37.841868: NMR Plot: Extraction of datapoints successful
+2025-07-02 14:06:37.841870: NMR Plot: Plotting of Spectrum successful
+2025-07-02 14:06:37.841873: NMR Plot: Run Plot_NMR
+2025-07-02 14:06:37.841875: NMR Plot: Loading data successful
+2025-07-02 14:06:37.841878: NMR Plot: Plot_NMR 3
+2025-07-02 14:06:37.841880: NMR Plot: Extraction of datapoints successful
+2025-07-02 14:06:37.841883: NMR Plot: Plotting of Spectrum successful
+2025-07-02 14:06:37.841885: NMR Plot: Run Plot_NMR
+2025-07-02 14:06:37.841888: NMR Plot: Loading data successful
+2025-07-02 14:06:37.841891: NMR Plot: Plot_NMR 3
+2025-07-02 14:06:37.841893: NMR Plot: Extraction of datapoints successful
+2025-07-02 14:06:37.841896: NMR Plot: Plotting of Spectrum successful
+2025-07-02 14:06:37.841898: Testing model...
+2025-07-02 14:06:37.841901: Testing model: Start test_model
+2025-07-02 14:06:37.841903: Testing model: Configs loaded
+2025-07-02 14:06:37.841906: Error testing model: Can't load the configuration of '../../models/mmst/base_models/Chemberta_source'. If you were trying to load it from 'https://huggingface.co/models', make sure you don't have a local directory with the same name. Otherwise, make sure '../../models/mmst/base_models/Chemberta_source' is the correct path to a directory containing a config.json file

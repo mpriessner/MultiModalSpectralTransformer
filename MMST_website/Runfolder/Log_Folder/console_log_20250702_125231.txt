@@ -1,0 +1,4 @@
+2025-07-02 12:52:31.140170: Simulating...
+2025-07-02 12:52:31.140188: Function simulate: Start of Simulation
+2025-07-02 12:52:31.140191: SMILES file not found at path: projects/cc/se_users/knlr326/1_NMR_project/2_Notebooks/MultiModalSpectralTransformer_cleaned/MMST_website/Runfolder/CSV_files/molecules_csv.csv
+2025-07-02 12:52:31.140194: Error occurred during simulation: SMILES file not found at path: projects/cc/se_users/knlr326/1_NMR_project/2_Notebooks/MultiModalSpectralTransformer_cleaned/MMST_website/Runfolder/CSV_files/molecules_csv.csv

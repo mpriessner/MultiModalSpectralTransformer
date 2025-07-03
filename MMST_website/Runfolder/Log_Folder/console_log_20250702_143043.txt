@@ -1,0 +1,13 @@
+2025-07-02 14:30:43.702703: Simulating...
+2025-07-02 14:30:43.702715: Function simulate: Start of Simulation
+2025-07-02 14:30:43.702718: Function simulate: Simulation Succeeded
+2025-07-02 14:30:43.702720: Simulation completed successfully!
+2025-07-02 14:30:43.702723: NMR Plot: Run Plot_NMR
+2025-07-02 14:30:43.702725: NMR Plot: Loading data successful
+2025-07-02 14:30:43.702728: NMR Plot: Plot_NMR 3
+2025-07-02 14:30:43.702730: NMR Plot: Extraction of datapoints successful
+2025-07-02 14:30:43.702733: NMR Plot: Plotting of Spectrum successful
+2025-07-02 14:30:43.702735: Testing model...
+2025-07-02 14:30:43.702737: Testing model: Start test_model
+2025-07-02 14:30:43.702740: Testing model: Configs loaded
+2025-07-02 14:30:43.702742: Error testing model: Can't load the configuration of '../../models/mmst/base_models/Chemberta_source'. If you were trying to load it from 'https://huggingface.co/models', make sure you don't have a local directory with the same name. Otherwise, make sure '../../models/mmst/base_models/Chemberta_source' is the correct path to a directory containing a config.json file

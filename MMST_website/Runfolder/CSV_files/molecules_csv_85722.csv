@@ -4,3 +4,6 @@ sample-id,SMILES
 3,CC(=O)Nc1ccc(O)cc1
 4,OCC1OC(O)C(O)C(O)C1O
 5,CCO
+6,CCCNC(=O)CNC(=O)c1ccc(N(CC)C(C)C)cc1
+7,O=C(NC1C2CN(C(=O)C3CC3)CC21)C1CCC(C(F)(F)F)C1
+8,NC(=O)C1=Nc2[nH]ccc2C1=O

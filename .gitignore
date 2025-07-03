@@ -11,6 +11,8 @@
 /IBM_experiment_results/
 /Users/mpriessner/windsurf_repos/MultiModalSpectralTransformer/2.0_Automatic_NMR_Data_Generation.ipynb
 
+/MMST_website/Runfolder/wandb/
+
 # Python bytecode
 __pycache__/
 *.py[cod]

@@ -1,0 +1,194 @@
+2025-07-02 13:54:38.137393: Simulating...
+2025-07-02 13:54:38.137404: Function simulate: Start of Simulation
+2025-07-02 13:54:38.137407: Function simulate: Simulation Succeeded
+2025-07-02 13:54:38.137410: Simulation completed successfully!
+2025-07-02 13:54:38.137413: NMR Plot: Run Plot_NMR
+2025-07-02 13:54:38.137415: NMR Plot: Loading data successful
+2025-07-02 13:54:38.137418: NMR Plot: Plot_NMR 3
+2025-07-02 13:54:38.137421: NMR Plot: Extraction of datapoints successful
+2025-07-02 13:54:38.137423: NMR Plot: Plotting of Spectrum successful
+2025-07-02 13:54:38.137426: NMR Plot: Run Plot_NMR
+2025-07-02 13:54:38.137428: NMR Plot: Loading data successful
+2025-07-02 13:54:38.137431: NMR Plot: Plot_NMR 3
+2025-07-02 13:54:38.137433: NMR Plot: Extraction of datapoints successful
+2025-07-02 13:54:38.137436: NMR Plot: Plotting of Spectrum successful
+2025-07-02 13:54:38.137438: NMR Plot: Run Plot_NMR
+2025-07-02 13:54:38.137441: NMR Plot: Loading data successful
+2025-07-02 13:54:38.137443: NMR Plot: Plot_NMR 3
+2025-07-02 13:54:38.137446: NMR Plot: Extraction of datapoints successful
+2025-07-02 13:54:38.137448: NMR Plot: Plotting of Spectrum successful
+2025-07-02 13:54:38.137451: NMR Plot: Run Plot_NMR
+2025-07-02 13:54:38.137453: NMR Plot: Loading data successful
+2025-07-02 13:54:38.137456: NMR Plot: Plot_NMR 3
+2025-07-02 13:54:38.137458: NMR Plot: Extraction of datapoints successful
+2025-07-02 13:54:38.137461: NMR Plot: Plotting of Spectrum successful
+2025-07-02 13:54:38.137463: NMR Plot: Run Plot_NMR
+2025-07-02 13:54:38.137466: NMR Plot: Loading data successful
+2025-07-02 13:54:38.137468: NMR Plot: Plot_NMR 3
+2025-07-02 13:54:38.137471: NMR Plot: Extraction of datapoints successful
+2025-07-02 13:54:38.137474: NMR Plot: Plotting of Spectrum successful
+2025-07-02 13:54:38.137476: NMR Plot: Run Plot_NMR
+2025-07-02 13:54:38.137479: NMR Plot: Loading data successful
+2025-07-02 13:54:38.137481: NMR Plot: Plot_NMR 3
+2025-07-02 13:54:38.137484: NMR Plot: Extraction of datapoints successful
+2025-07-02 13:54:38.137486: NMR Plot: Plotting of Spectrum successful
+2025-07-02 13:54:38.137489: NMR Plot: Run Plot_NMR
+2025-07-02 13:54:38.137491: NMR Plot: Loading data successful
+2025-07-02 13:54:38.137494: NMR Plot: Plot_NMR 3
+2025-07-02 13:54:38.137496: NMR Plot: Extraction of datapoints successful
+2025-07-02 13:54:38.137499: NMR Plot: Plotting of Spectrum successful
+2025-07-02 13:54:38.137501: NMR Plot: Run Plot_NMR
+2025-07-02 13:54:38.137504: NMR Plot: Loading data successful
+2025-07-02 13:54:38.137506: NMR Plot: Plot_NMR 3
+2025-07-02 13:54:38.137509: NMR Plot: Extraction of datapoints successful
+2025-07-02 13:54:38.137511: NMR Plot: Plotting of Spectrum successful
+2025-07-02 13:54:38.137513: NMR Plot: Run Plot_NMR
+2025-07-02 13:54:38.137516: NMR Plot: Loading data successful
+2025-07-02 13:54:38.137518: NMR Plot: Plot_NMR 3
+2025-07-02 13:54:38.137521: NMR Plot: Extraction of datapoints successful
+2025-07-02 13:54:38.137524: NMR Plot: Plotting of Spectrum successful
+2025-07-02 13:54:38.137526: NMR Plot: Run Plot_NMR
+2025-07-02 13:54:38.137528: NMR Plot: Loading data successful
+2025-07-02 13:54:38.137531: NMR Plot: Plot_NMR 3
+2025-07-02 13:54:38.137533: NMR Plot: Extraction of datapoints successful
+2025-07-02 13:54:38.137536: NMR Plot: Plotting of Spectrum successful
+2025-07-02 13:54:38.137538: NMR Plot: Run Plot_NMR
+2025-07-02 13:54:38.137541: NMR Plot: Loading data successful
+2025-07-02 13:54:38.137543: NMR Plot: Plot_NMR 3
+2025-07-02 13:54:38.137546: NMR Plot: Extraction of datapoints successful
+2025-07-02 13:54:38.137548: NMR Plot: Plotting of Spectrum successful
+2025-07-02 13:54:38.137551: NMR Plot: Run Plot_NMR
+2025-07-02 13:54:38.137553: NMR Plot: Loading data successful
+2025-07-02 13:54:38.137556: NMR Plot: Plot_NMR 3
+2025-07-02 13:54:38.137558: NMR Plot: Extraction of datapoints successful
+2025-07-02 13:54:38.137561: NMR Plot: Plotting of Spectrum successful
+2025-07-02 13:54:38.137563: NMR Plot: Run Plot_NMR
+2025-07-02 13:54:38.137566: NMR Plot: Loading data successful
+2025-07-02 13:54:38.137568: NMR Plot: Plot_NMR 3
+2025-07-02 13:54:38.137570: NMR Plot: Extraction of datapoints successful
+2025-07-02 13:54:38.137573: NMR Plot: Plotting of Spectrum successful
+2025-07-02 13:54:38.137575: NMR Plot: Run Plot_NMR
+2025-07-02 13:54:38.137578: NMR Plot: Loading data successful
+2025-07-02 13:54:38.137580: NMR Plot: Plot_NMR 3
+2025-07-02 13:54:38.137583: NMR Plot: Extraction of datapoints successful
+2025-07-02 13:54:38.137585: NMR Plot: Plotting of Spectrum successful
+2025-07-02 13:54:38.137588: NMR Plot: Run Plot_NMR
+2025-07-02 13:54:38.137590: NMR Plot: Loading data successful
+2025-07-02 13:54:38.137593: NMR Plot: Plot_NMR 3
+2025-07-02 13:54:38.137595: NMR Plot: Extraction of datapoints successful
+2025-07-02 13:54:38.137598: NMR Plot: Plotting of Spectrum successful
+2025-07-02 13:54:38.137600: NMR Plot: Run Plot_NMR
+2025-07-02 13:54:38.137602: NMR Plot: Loading data successful
+2025-07-02 13:54:38.137605: NMR Plot: Plot_NMR 3
+2025-07-02 13:54:38.137607: NMR Plot: Extraction of datapoints successful
+2025-07-02 13:54:38.137610: NMR Plot: Plotting of Spectrum successful
+2025-07-02 13:54:38.137612: NMR Plot: Run Plot_NMR
+2025-07-02 13:54:38.137615: NMR Plot: Loading data successful
+2025-07-02 13:54:38.137617: NMR Plot: Plot_NMR 3
+2025-07-02 13:54:38.137620: NMR Plot: Extraction of datapoints successful
+2025-07-02 13:54:38.137622: NMR Plot: Plotting of Spectrum successful
+2025-07-02 13:54:38.137625: NMR Plot: Run Plot_NMR
+2025-07-02 13:54:38.137627: NMR Plot: Loading data successful
+2025-07-02 13:54:38.137630: NMR Plot: Plot_NMR 3
+2025-07-02 13:54:38.137632: NMR Plot: Extraction of datapoints successful
+2025-07-02 13:54:38.137635: NMR Plot: Plotting of Spectrum successful
+2025-07-02 13:54:38.137637: NMR Plot: Run Plot_NMR
+2025-07-02 13:54:38.137640: NMR Plot: Loading data successful
+2025-07-02 13:54:38.137642: NMR Plot: Plot_NMR 3
+2025-07-02 13:54:38.137645: NMR Plot: Extraction of datapoints successful
+2025-07-02 13:54:38.137647: NMR Plot: Plotting of Spectrum successful
+2025-07-02 13:54:38.137650: NMR Plot: Run Plot_NMR
+2025-07-02 13:54:38.137652: NMR Plot: Loading data successful
+2025-07-02 13:54:38.137655: NMR Plot: Plot_NMR 3
+2025-07-02 13:54:38.137657: NMR Plot: Extraction of datapoints successful
+2025-07-02 13:54:38.137660: NMR Plot: Plotting of Spectrum successful
+2025-07-02 13:54:38.137662: NMR Plot: Run Plot_NMR
+2025-07-02 13:54:38.137665: NMR Plot: Loading data successful
+2025-07-02 13:54:38.137667: NMR Plot: Plot_NMR 3
+2025-07-02 13:54:38.137670: NMR Plot: Extraction of datapoints successful
+2025-07-02 13:54:38.137672: NMR Plot: Plotting of Spectrum successful
+2025-07-02 13:54:38.137674: NMR Plot: Run Plot_NMR
+2025-07-02 13:54:38.137677: NMR Plot: Loading data successful
+2025-07-02 13:54:38.137679: NMR Plot: Plot_NMR 3
+2025-07-02 13:54:38.137682: NMR Plot: Extraction of datapoints successful
+2025-07-02 13:54:38.137684: NMR Plot: Plotting of Spectrum successful
+2025-07-02 13:54:38.137687: NMR Plot: Run Plot_NMR
+2025-07-02 13:54:38.137689: NMR Plot: Loading data successful
+2025-07-02 13:54:38.137691: NMR Plot: Plot_NMR 3
+2025-07-02 13:54:38.137694: NMR Plot: Extraction of datapoints successful
+2025-07-02 13:54:38.137696: NMR Plot: Plotting of Spectrum successful
+2025-07-02 13:54:38.137699: NMR Plot: Run Plot_NMR
+2025-07-02 13:54:38.137701: NMR Plot: Loading data successful
+2025-07-02 13:54:38.137704: NMR Plot: Plot_NMR 3
+2025-07-02 13:54:38.137706: NMR Plot: Extraction of datapoints successful
+2025-07-02 13:54:38.137709: NMR Plot: Plotting of Spectrum successful
+2025-07-02 13:54:38.137711: NMR Plot: Run Plot_NMR
+2025-07-02 13:54:38.137714: NMR Plot: Loading data successful
+2025-07-02 13:54:38.137716: NMR Plot: Plot_NMR 3
+2025-07-02 13:54:38.137719: NMR Plot: Extraction of datapoints successful
+2025-07-02 13:54:38.137721: NMR Plot: Plotting of Spectrum successful
+2025-07-02 13:54:38.137723: NMR Plot: Run Plot_NMR
+2025-07-02 13:54:38.137726: NMR Plot: Loading data successful
+2025-07-02 13:54:38.137728: NMR Plot: Plot_NMR 3
+2025-07-02 13:54:38.137731: NMR Plot: Extraction of datapoints successful
+2025-07-02 13:54:38.137733: NMR Plot: Plotting of Spectrum successful
+2025-07-02 13:54:38.137763: NMR Plot: Run Plot_NMR
+2025-07-02 13:54:38.137766: NMR Plot: Loading data successful
+2025-07-02 13:54:38.137768: NMR Plot: Plot_NMR 3
+2025-07-02 13:54:38.137771: NMR Plot: Extraction of datapoints successful
+2025-07-02 13:54:38.137773: NMR Plot: Plotting of Spectrum successful
+2025-07-02 13:54:38.137776: NMR Plot: Run Plot_NMR
+2025-07-02 13:54:38.137778: NMR Plot: Loading data successful
+2025-07-02 13:54:38.137780: NMR Plot: Plot_NMR 3
+2025-07-02 13:54:38.137783: NMR Plot: Extraction of datapoints successful
+2025-07-02 13:54:38.137785: NMR Plot: Plotting of Spectrum successful
+2025-07-02 13:54:38.137788: NMR Plot: Run Plot_NMR
+2025-07-02 13:54:38.137790: NMR Plot: Loading data successful
+2025-07-02 13:54:38.137793: NMR Plot: Plot_NMR 3
+2025-07-02 13:54:38.137795: NMR Plot: Extraction of datapoints successful
+2025-07-02 13:54:38.137797: NMR Plot: Plotting of Spectrum successful
+2025-07-02 13:54:38.137800: NMR Plot: Run Plot_NMR
+2025-07-02 13:54:38.137802: NMR Plot: Loading data successful
+2025-07-02 13:54:38.137805: NMR Plot: Plot_NMR 3
+2025-07-02 13:54:38.137807: NMR Plot: Extraction of datapoints successful
+2025-07-02 13:54:38.137810: NMR Plot: Plotting of Spectrum successful
+2025-07-02 13:54:38.137812: NMR Plot: Run Plot_NMR
+2025-07-02 13:54:38.137820: NMR Plot: Loading data successful
+2025-07-02 13:54:38.137823: NMR Plot: Plot_NMR 3
+2025-07-02 13:54:38.137825: NMR Plot: Extraction of datapoints successful
+2025-07-02 13:54:38.137828: NMR Plot: Plotting of Spectrum successful
+2025-07-02 13:54:38.137830: NMR Plot: Run Plot_NMR
+2025-07-02 13:54:38.137833: NMR Plot: Loading data successful
+2025-07-02 13:54:38.137835: NMR Plot: Plot_NMR 3
+2025-07-02 13:54:38.137837: NMR Plot: Extraction of datapoints successful
+2025-07-02 13:54:38.137840: NMR Plot: Plotting of Spectrum successful
+2025-07-02 13:54:38.137842: NMR Plot: Run Plot_NMR
+2025-07-02 13:54:38.137845: NMR Plot: Loading data successful
+2025-07-02 13:54:38.137847: NMR Plot: Plot_NMR 3
+2025-07-02 13:54:38.137849: NMR Plot: Extraction of datapoints successful
+2025-07-02 13:54:38.137852: NMR Plot: Plotting of Spectrum successful
+2025-07-02 13:54:38.137854: NMR Plot: Run Plot_NMR
+2025-07-02 13:54:38.137857: NMR Plot: Loading data successful
+2025-07-02 13:54:38.137859: NMR Plot: Plot_NMR 3
+2025-07-02 13:54:38.137862: NMR Plot: Extraction of datapoints successful
+2025-07-02 13:54:38.137864: NMR Plot: Plotting of Spectrum successful
+2025-07-02 13:54:38.137867: NMR Plot: Run Plot_NMR
+2025-07-02 13:54:38.137869: NMR Plot: Loading data successful
+2025-07-02 13:54:38.137872: NMR Plot: Plot_NMR 3
+2025-07-02 13:54:38.137874: NMR Plot: Extraction of datapoints successful
+2025-07-02 13:54:38.137877: NMR Plot: Plotting of Spectrum successful
+2025-07-02 13:54:38.137879: NMR Plot: Run Plot_NMR
+2025-07-02 13:54:38.137881: NMR Plot: Loading data successful
+2025-07-02 13:54:38.137884: NMR Plot: Plot_NMR 3
+2025-07-02 13:54:38.137886: NMR Plot: Extraction of datapoints successful
+2025-07-02 13:54:38.137889: NMR Plot: Plotting of Spectrum successful
+2025-07-02 13:54:38.137891: NMR Plot: Run Plot_NMR
+2025-07-02 13:54:38.137894: NMR Plot: Loading data successful
+2025-07-02 13:54:38.137896: NMR Plot: Plot_NMR 3
+2025-07-02 13:54:38.137899: NMR Plot: Extraction of datapoints successful
+2025-07-02 13:54:38.137901: NMR Plot: Plotting of Spectrum successful
+2025-07-02 13:54:38.137903: NMR Plot: Run Plot_NMR
+2025-07-02 13:54:38.137906: NMR Plot: Loading data successful
+2025-07-02 13:54:38.137908: NMR Plot: Plot_NMR 3
+2025-07-02 13:54:38.137911: NMR Plot: Extraction of datapoints successful
+2025-07-02 13:54:38.137914: NMR Plot: Plotting of Spectrum successful
