@@ -11,7 +11,7 @@ Publication:
 - Data Repository part 1: [Zenodo](https://doi.org/10.5281/zenodo.16076914)
 - Data Repository part 2: [Zenodo](https://doi.org/10.5281/zenodo.16257786)
 - Data Repository part 3: [Zenodo](https://doi.org/10.5281/zenodo.16283829)
-- 
+  
 ![MultiModalSpectralTransformer Architecture](dump/TOC.png)
 
 ## Computational Requirements
