@@ -126,6 +126,7 @@ Please refer to these notebooks for detailed procedures on data generation and e
    ```
 
 2. **Download Required Data and Models**:
+3. 
    Download the necessary files from our Zenodo repository: [https://doi.org/10.5281/zenodo.14712886](https://doi.org/10.5281/zenodo.16076914)
    Download the necessary files from our Zenodo repository: [https://doi.org/10.5281/zenodo.14712886](https://doi.org/10.5281/zenodo.16257786)
    
@@ -146,7 +147,7 @@ Please refer to these notebooks for detailed procedures on data generation and e
    unzip experiment.zip -d experiment/
    ```
 
-3. **Environment Setup**:
+4. **Environment Setup**:
    We provide an installation script that sets up all the necessary dependencies:
    
    ```bash
@@ -162,7 +163,7 @@ Please refer to these notebooks for detailed procedures on data generation and e
    
    The `installs.sh` script will install all required packages including PyTorch, RDKit, and other dependencies needed for the project.
 
-4. **Verify Installation**:
+5. **Verify Installation**:
    Test that the environment is properly set up by running one of the simpler notebooks:
    
    ```bash
