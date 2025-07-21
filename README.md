@@ -8,7 +8,8 @@ Implementation of the following publication:
 
 Publication:
 - Preprint: [ChemRxiv](https://chemrxiv.org/engage/chemrxiv/article-details/67339b2df9980725cff94c52)
-- Data Repository: [Zenodo](https://doi.org/10.5281/zenodo.14712886)
+- Data Repository part 1: [Zenodo](https://doi.org/10.5281/zenodo.16076914)
+- Data Repository part 2: [Zenodo](https://doi.org/10.5281/zenodo.16257786)
 
 ![MultiModalSpectralTransformer Architecture](dump/TOC.png)
 
@@ -55,26 +56,31 @@ After cloning the repository and adding the required data and models, your folde
 ```
 MultiModalSpectralTransformer
 │
+├── 📁 AI_docs                # Documentation related to the AI model
 ├── 📁 chemprop-IR            # IR spectrum prediction model
-├── 📁 data                   # Downloaded datasets and generated data
-│   ├── 📁 datasets           # Raw and processed datasets
-│   ├── 📁 generated          # Generated spectral data
-│   └── 📁 predictions        # Model predictions
-├── 📁 deep-molecular-optimization  # Molecule optimization code
+├── 📁 data                   # All datasets (download from Zenodo)
+│   ├── 📁 IBM_dataset        
+│   ├── 📁 PubChem_dataset
+│   ├── 📁 test_data
+│   ├── 📁 ZINC_4000
+│   └── 📁 ZINC_dataset
+├── 📁 deep-molecular-optimization # Molecule optimization code
 ├── 📁 dump                   # Temporary files and outputs
-├── 📁 experiment             # Experimental results and data for reproducing figures
-│   ├── 📁 figures            # Generated figures from the paper
-│   └── 📁 results            # Raw results from experiments
-├── 📁 models                 # Downloaded pre-trained models
-│   ├── 📁 chemprop-ir        # IR prediction models
-│   ├── 📁 mmst               # Multi-modal spectral transformer models
-│   ├── 📁 mol2mol            # Molecule translation models
-│   └── 📁 sgnn               # NMR prediction models
+├── 📁 experiments            # General experiment outputs
+├── 📁 HSQC_results           # Results specific to HSQC experiments
 ├── 📁 MMT_website            # Web interface files
-├── 📁 nmr_sgnn_norm          # NMR spectrum prediction model
+├── 📁 models                 # Pre-trained models (download from Zenodo)
+│   ├── 📁 chemprop-ir
+│   ├── 📁 mmst
+│   ├── 📁 mol2mol
+│   ├── 📁 sgnn
+├── 📁 nmr_sgnn_norm
+├── 📁 past_experiments / ChemXriv # Notebooks and data to reproduce paper experiments
+│   ├── 📁 0.0_Experiment_Training_Strategy
+│   ├── 📁 1.0_Experiment_Trainings_Experiments
+│   └── 📁 ... (and other experiment folders)
 ├── 📁 scripts                # Utility scripts
 ├── 📁 utils_MMT              # Core utilities and functions
-├── 📁 utils_MMST             # Additional utilities
 └── [Various notebooks]       # Jupyter notebooks for different tasks
 ```
 
@@ -87,8 +93,6 @@ The project includes several Jupyter notebooks for different purposes:
 
 1. **1.0_Experiment_Notebook.ipynb**
    - This notebook is used to reproduce the experiments.
-   - Note: The paths for the pkl files need to be changed according to the extraction folder where they are stored.
-   - [Link to related paper]
    
 2. **2.0_NMR_Data_Generation.ipynb**
    - This notebook is used to generate simulated NMR data using the SGNN network.
@@ -98,7 +102,7 @@ The project includes several Jupyter notebooks for different purposes:
    - This notebook is used to produce simulated IR data using the Chemprop-IR network.
    - [Link to Chemprop-IR paper](https://pubs.acs.org/doi/abs/10.1021/acs.jcim.1c00055)
 
-4. **4.0_Chemprop_IR_Data_Generation.ipynb**
+4. **4.0_Explainability_plot.ipynb**
    - Visualizes molecules with color-coded atoms showing probabilities
    - Creates SVGs, labels, and SMILES string visualizations
    - Supports colored and non-colored molecule rendering from pickle files
@@ -111,7 +115,7 @@ Please refer to these notebooks for detailed procedures on data generation and e
 ### Prerequisites
 
 - **Conda**: Ensure you have Conda installed on your system.
-- **CUDA**: CUDA 11.1 is required for the GPU acceleration (required for PyTorch and DGL).
+- **CUDA**: CUDA 11.1 is required for the GPU acceleration (required for PyTorch).
 
 ### Setup
 
@@ -155,7 +159,7 @@ Please refer to these notebooks for detailed procedures on data generation and e
    bash installs.sh
    ```
    
-   The `installs.sh` script will install all required packages including PyTorch, DGL, RDKit, and other dependencies needed for the project.
+   The `installs.sh` script will install all required packages including PyTorch, RDKit, and other dependencies needed for the project.
 
 4. **Verify Installation**:
    Test that the environment is properly set up by running one of the simpler notebooks:
@@ -189,7 +193,7 @@ We provide several Jupyter notebooks for different aspects of the workflow:
    ```
 
 2. **Select a Notebook**:
-   - `1.8_Experiment_Notebook_.ipynb` - For running experiments and evaluating results
+   - `1.0_Experiment_Notebook.ipynb` - For running experiments and evaluating results
    - `2.0_Automatic_NMR_Data_Generation.ipynb` - For generating synthetic NMR data
    - `3.0_Chemprop_IR_Data_Generation_.ipynb` - For generating IR spectral data
    - `4.0_Explainability_plot.ipynb` - For visualizing model interpretations
