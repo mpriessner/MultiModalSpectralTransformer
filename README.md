@@ -218,6 +218,15 @@ We provide several Jupyter notebooks for different aspects of the workflow:
    - Error: `torch.nn.modules.module.ModuleAttributeError: 'xxx' object has no attribute 'xxx'`
    - Solution: Ensure you're using the correct model files from Zenodo and that they match the expected format.
 
+5. **Accessing Web Interface on Remote Servers**:
+   - Issue: When running the application on a remote or virtual node, you can't access the web interface via browser.
+   - Solution: Set up SSH port forwarding to tunnel the application port from the remote server to your local machine:
+     ```bash
+     ssh -L 5000:localhost:5000 <username>@<node>
+     ```
+     This command forwards port 5000 on the remote server to port 5000 on your local machine, allowing you to access the web interface by visiting `http://localhost:5000` in your browser.
+   - Note: Make sure your SSH connection remains active while using the web interface. For persistent connections, consider using tools like `tmux` or `screen` on the remote server.
+  
 If you encounter persistent issues, please check the GitHub repository for updated troubleshooting guidance or open an issue with detailed information about your problem.
 
 ## Contributing
