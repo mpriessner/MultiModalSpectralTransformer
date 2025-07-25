@@ -127,10 +127,10 @@ Please refer to these notebooks for detailed procedures on data generation and e
    ```
 
 2. **Download Required Data and Models**:
-3. **Download the necessary files from our Zenodo repository**:
-  [https://doi.org/10.5281/zenodo.16076914](https://doi.org/10.5281/zenodo.16076914)
-  [https://doi.org/10.5281/zenodo.16257786](https://doi.org/10.5281/zenodo.16257786)
-  [https://doi.org/10.5281/zenodo.16283829](https://doi.org/10.5281/zenodo.16283829)
+   Download the necessary files from our Zenodo repository:
+   - [https://doi.org/10.5281/zenodo.16076914](https://doi.org/10.5281/zenodo.16076914)
+   - [https://doi.org/10.5281/zenodo.16257786](https://doi.org/10.5281/zenodo.16257786)
+   - [https://doi.org/10.5281/zenodo.16283829](https://doi.org/10.5281/zenodo.16283829)
 
    ```bash
   # Create directories if they don't exist
