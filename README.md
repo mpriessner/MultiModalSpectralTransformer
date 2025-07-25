@@ -133,23 +133,23 @@ Please refer to these notebooks for detailed procedures on data generation and e
    - [https://doi.org/10.5281/zenodo.16283829](https://doi.org/10.5281/zenodo.16283829)
 
    ```bash
-  # Create directories if they don't exist
-  mkdir -p data models past_experiments
-  
-  # Extract data files (after downloading all data.tar.xz.part* files)
-  cat data.tar.xz.part* > data.tar.xz
-  tar -xJf data.tar.xz -C data/
-  rm data.tar.xz
-  
-  # Extract model files (after downloading all models.tar.xz.part* files)
-  cat models.tar.xz.part* > models.tar.xz
-  tar -xJf models.tar.xz -C models/
-  rm models.tar.xz
-  
-  # Extract past experiments files (after downloading all past_experiments.tar.xz.part* files)
-  cat past_experiments.tar.xz.part* > past_experiments.tar.xz
-  tar -xJf past_experiments.tar.xz -C past_experiments/
-  rm past_experiments.tar.xz
+   # Create directories if they don't exist
+   mkdir -p data models past_experiments
+   
+   # Extract data files (after downloading all data.tar.xz.part* files)
+   cat data.tar.xz.part* > data.tar.xz
+   tar -xJf data.tar.xz -C data/
+   rm data.tar.xz
+   
+   # Extract model files (after downloading all models.tar.xz.part* files)
+   cat models.tar.xz.part* > models.tar.xz
+   tar -xJf models.tar.xz -C models/
+   rm models.tar.xz
+   
+   # Extract past experiments files (after downloading all past_experiments.tar.xz.part* files)
+   cat past_experiments.tar.xz.part* > past_experiments.tar.xz
+   tar -xJf past_experiments.tar.xz -C past_experiments/
+   rm past_experiments.tar.xz
    ```
 
 4. **Environment Setup**:
