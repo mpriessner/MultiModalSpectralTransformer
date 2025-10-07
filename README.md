@@ -10,7 +10,7 @@ Publication:
 - Preprint: [ChemRxiv](https://chemrxiv.org/engage/chemrxiv/article-details/67339b2df9980725cff94c52)
 - Data Repository part 1: [Zenodo](https://doi.org/10.5281/zenodo.16076914)
 - Data Repository part 2: [Zenodo](https://doi.org/10.5281/zenodo.16257786)
-- Data Repository part 3: [Zenodo](https://doi.org/10.5281/zenodo.16283829)
+- Data Repository part 3: [Zenodo](https://doi.org/10.5281/zenodo.17284940)
   
 ![MultiModalSpectralTransformer Architecture](dump/TOC.png)
 
